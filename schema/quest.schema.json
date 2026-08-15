@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "quest.schema.json",
+  "title": "Quest",
+  "description": "A quest with a derived status. availableWhen makes it offerable; closedWhen locks it off (decision impact); stages track progress; outcomes are named end-states with effects.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/definitions/id" },
+    "name": { "type": "string" },
+    "summary": { "type": "string" },
+    "giverId": { "$ref": "common.schema.json#/definitions/id" },
+    "startsAvailable": {
+      "type": "boolean",
+      "description": "true = available from game start (covers 'always at least one quest open'). If true, availableWhen is ignored."
+    },
+    "availableWhen": {
+      "$ref": "common.schema.json#/definitions/condition",
+      "description": "Condition that moves this quest from unknown -> available. Omit + startsAvailable=true for opening quests."
+    },
+    "closedWhen": {
+      "$ref": "common.schema.json#/definitions/condition",
+      "description": "Condition that permanently closes this quest off (decision impact)."
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "$ref": "common.schema.json#/definitions/id" },
+          "order": { "type": "integer", "description": "intended sequence index; validator checks ordering sanity" },
+          "description": {
+            "type": "string",
+            "description": "RETROSPECTIVE line — what the protagonist did, shown in the journal once this stage is complete. Not a to-do; the forward-looking routes for the current stage are 'objectives'."
+          },
+          "completeWhen": { "$ref": "common.schema.json#/definitions/condition" },
+          "onComplete": { "type": "array", "items": { "$ref": "common.schema.json#/definitions/effect" } },
+          "objectives": {
+            "type": "array",
+            "description": "Routes the protagonist could take while this stage is current, in authoring order (the journal renders them in this order). DISPLAY-ONLY: no effects, no goto, no per-objective completion — completeWhen alone decides when the stage is done.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "$ref": "common.schema.json#/definitions/id",
+                  "description": "Stable, unique within this stage. Validator and diff only — never rendered."
+                },
+                "text": {
+                  "type": "string",
+                  "description": "Protagonist-voice INTENTION line — what the protagonist has decided to do, shown while this stage is current."
+                },
+                "showIf": {
+                  "$ref": "common.schema.json#/definitions/condition",
+                  "description": "Visibility gate; omit for always visible. Gates on knowledge and acquaintance — an objective shows only if the protagonist could actually name that route."
+                }
+              },
+              "required": ["id", "text"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["id", "order", "description"],
+        "additionalProperties": false
+      }
+    },
+    "outcomes": {
+      "type": "array",
+      "description": "Named end-states (succeeded, failed, refused, ...). Each fires effects.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "$ref": "common.schema.json#/definitions/id" },
+          "kind": { "enum": ["success", "failure", "neutral"] },
+          "description": { "type": "string" },
+          "reachedWhen": { "$ref": "common.schema.json#/definitions/condition" },
+          "effects": { "type": "array", "items": { "$ref": "common.schema.json#/definitions/effect" } }
+        },
+        "required": ["id", "kind", "description"],
+        "additionalProperties": false
+      }
+    },
+    "loreRef": { "$ref": "common.schema.json#/definitions/loreRef" },
+    "tags": {
+      "$ref": "common.schema.json#/definitions/tags",
+      "description": "Journal grouping and prioritisation (main vs. side, act, faction) is driven from here — main-vs-side is a tag, never a boolean. If the project declares quest.tagVocabulary in rules.json, tags are linted against it and an off-vocabulary tag is a warning; with no declared vocabulary, any tag is accepted."
+    },
+    "journalName": {
+      "type": "string",
+      "description": "Player-facing quest title shown in the journal. Falls back to 'name' when absent — 'name' stays the authoring-facing label."
+    }
+  },
+  "required": ["id", "name", "summary", "stages"],
+  "additionalProperties": false
+}

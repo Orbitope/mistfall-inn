@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "cutscene.schema.json",
+  "title": "Cutscene manifest",
+  "description": "A cutscene is a manifest, not a script: an opaque engine asset key plus the game-state effects applied when it completes. Motion, camera, and timing live in the engine's own timeline tooling — never in JSON. Chain staging→talk→staging via entersDialogue + play_cutscene effects; no dialogue nests inside a cutscene.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/definitions/id" },
+    "name": { "type": "string" },
+    "asset": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque key to an engine asset (e.g. 'Cutscenes/HarbourArrival'). Parlance never resolves it — a mismatch is the engine loader's error to report, not Parlance's."
+    },
+    "skippable": {
+      "type": "boolean",
+      "description": "Player may skip; skipping applies effectsOnComplete immediately."
+    },
+    "effectsOnComplete": {
+      "type": "array",
+      "description": "The only game-state a cutscene produces, applied when it ends.",
+      "items": { "$ref": "common.schema.json#/definitions/effect" }
+    },
+    "entersDialogue": {
+      "$ref": "common.schema.json#/definitions/id",
+      "description": "Chain: dialogue to open when the cutscene finishes."
+    },
+    "arrivesAt": {
+      "type": "object",
+      "description": "Where the player stands when this cutscene ends. Applied by the host after effectsOnComplete and after clearing pendingCutscene, before entersDialogue. Any motion inside the cutscene is choreography only: skipping and watching in full must land in the same place with the same state. Omit for a cutscene that plays in place.",
+      "properties": {
+        "location": { "$ref": "common.schema.json#/definitions/id" },
+        "spawn": { "$ref": "common.schema.json#/definitions/id" }
+      },
+      "required": ["location", "spawn"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["id", "name", "asset", "skippable", "effectsOnComplete"],
+  "additionalProperties": false
+}

@@ -1,0 +1,615 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "common.schema.json",
+  "title": "Common shared definitions",
+  "description": "Reusable Condition, Effect, and Check structures, shared by every entity schema.",
+  "definitions": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "lowercase snake_case unique identifier"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Optional freeform labels for filtering and search."
+    },
+    "loreRef": {
+      "type": "object",
+      "description": "Optional pointer back to a human-readable lore doc.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "path under /lore, e.g. lore/factions.md"
+        },
+        "anchor": {
+          "type": "string",
+          "description": "optional heading anchor within the file"
+        }
+      },
+      "required": [
+        "file"
+      ],
+      "additionalProperties": false
+    },
+    "condition": {
+      "type": "object",
+      "description": "A testable predicate. Composable via all/any/not.",
+      "oneOf": [
+        {
+          "properties": {
+            "type": {
+              "const": "flag"
+            },
+            "flag": {
+              "$ref": "#/definitions/id"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "flag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "reputation"
+            },
+            "faction": {
+              "$ref": "#/definitions/id"
+            },
+            "op": {
+              "enum": [
+                ">=",
+                "<=",
+                "==",
+                ">",
+                "<"
+              ]
+            },
+            "value": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "type",
+            "faction",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "description": "Standing with a single character — the per-character counterpart of `reputation`. An absent key reads as 0. Unclamped: unlike a faction, a character declares no range.",
+          "properties": {
+            "type": {
+              "const": "relationship"
+            },
+            "character": {
+              "$ref": "#/definitions/id"
+            },
+            "op": {
+              "enum": [
+                ">=",
+                "<=",
+                "==",
+                ">",
+                "<"
+              ]
+            },
+            "value": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "type",
+            "character",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "skill"
+            },
+            "skill": {
+              "$ref": "#/definitions/id"
+            },
+            "op": {
+              "enum": [
+                ">=",
+                "<=",
+                "==",
+                ">",
+                "<"
+              ]
+            },
+            "value": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "type",
+            "skill",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "item"
+            },
+            "item": {
+              "$ref": "#/definitions/id"
+            },
+            "has": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "item",
+            "has"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "counter"
+            },
+            "counter": {
+              "$ref": "#/definitions/id"
+            },
+            "op": {
+              "enum": [
+                ">=",
+                "<=",
+                "==",
+                ">",
+                "<"
+              ]
+            },
+            "value": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "type",
+            "counter",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "description": "Quest progress, compared by stage ORDER rather than id equality — '>= stg_x' means at or past that stage. A quest that has not been advanced sits before every stage, so '< firstStage' is 'not started yet'. An unknown quest or stage is false for every op.",
+          "properties": {
+            "type": {
+              "const": "quest"
+            },
+            "quest": {
+              "$ref": "#/definitions/id"
+            },
+            "op": {
+              "enum": [
+                ">=",
+                "<=",
+                "==",
+                ">",
+                "<"
+              ]
+            },
+            "stage": {
+              "$ref": "#/definitions/id",
+              "description": "A stage id belonging to the named quest."
+            }
+          },
+          "required": [
+            "type",
+            "quest",
+            "op",
+            "stage"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "description": "True when the named quest outcome has been reached — evaluated by re-testing that outcome's own reachedWhen against current state, NOT by reading questFired (quest resolution only records outcomes that carry effects, so a fired-record read would be permanently false for effect-free outcomes). An outcome with no reachedWhen is never reached. An unknown quest or outcome, or a reference cycle, is false for every state.",
+          "properties": {
+            "type": {
+              "const": "questOutcome"
+            },
+            "quest": {
+              "$ref": "#/definitions/id"
+            },
+            "outcome": {
+              "$ref": "#/definitions/id",
+              "description": "An outcome id belonging to the named quest."
+            }
+          },
+          "required": [
+            "type",
+            "quest",
+            "outcome"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": {
+              "enum": [
+                "all",
+                "any"
+              ]
+            },
+            "of": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/condition"
+              },
+              "minItems": 1
+            }
+          },
+          "required": [
+            "type",
+            "of"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "not"
+            },
+            "of": {
+              "$ref": "#/definitions/condition"
+            }
+          },
+          "required": [
+            "type",
+            "of"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "effect": {
+      "type": "object",
+      "description": "A state change applied when something happens.",
+      "oneOf": [
+        {
+          "properties": {
+            "type": {
+              "const": "set_flag"
+            },
+            "flag": {
+              "$ref": "#/definitions/id"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "flag",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "adjust_reputation"
+            },
+            "faction": {
+              "$ref": "#/definitions/id"
+            },
+            "delta": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "type",
+            "faction",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "description": "Adjust standing with one character. Unclamped, unlike adjust_reputation — a character has no declared range.",
+          "properties": {
+            "type": {
+              "const": "adjust_relationship"
+            },
+            "character": {
+              "$ref": "#/definitions/id"
+            },
+            "delta": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "type",
+            "character",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": {
+              "enum": [
+                "give_item",
+                "take_item"
+              ]
+            },
+            "item": {
+              "$ref": "#/definitions/id"
+            }
+          },
+          "required": [
+            "type",
+            "item"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "adjust_counter"
+            },
+            "counter": {
+              "$ref": "#/definitions/id"
+            },
+            "delta": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "type",
+            "counter",
+            "delta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": {
+              "const": "advance_quest"
+            },
+            "quest": {
+              "$ref": "#/definitions/id"
+            },
+            "toStage": {
+              "$ref": "#/definitions/id"
+            }
+          },
+          "required": [
+            "type",
+            "quest",
+            "toStage"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "description": "Grants total XP (monotonic). Authored on quest outcomes by convention. amount should be positive.",
+          "properties": {
+            "type": {
+              "const": "grant_xp"
+            },
+            "amount": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "type",
+            "amount"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "description": "Push-based scene switch: activates a specific dialogue for a character. Game plays this dialogue next time the player talks to them.",
+          "properties": {
+            "type": {
+              "const": "set_active_dialogue"
+            },
+            "character": {
+              "$ref": "#/definitions/id"
+            },
+            "dialogue": {
+              "$ref": "#/definitions/id"
+            }
+          },
+          "required": [
+            "type",
+            "character",
+            "dialogue"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "description": "Queues a cutscene; runtime only records the request (see pendingCutscene on GameState).",
+          "properties": {
+            "type": {
+              "const": "play_cutscene"
+            },
+            "cutscene": {
+              "$ref": "#/definitions/id"
+            }
+          },
+          "required": [
+            "type",
+            "cutscene"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "description": "Writes a string-substitution slot (variable kind:'text'), read back by interpolate() wherever {variable} appears in player-facing text. 'value' is always a literal — capturing free-text player input is the engine's job.",
+          "properties": {
+            "type": {
+              "const": "set_text"
+            },
+            "variable": {
+              "$ref": "#/definitions/id"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "variable",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "check": {
+      "type": "object",
+      "description": "A skill roll (active) or threshold reveal (passive) wrapped around a choice.",
+      "properties": {
+        "mode": {
+          "enum": [
+            "active",
+            "passive"
+          ]
+        },
+        "skill": {
+          "$ref": "#/definitions/id"
+        },
+        "difficulty": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "onSuccess": {
+          "$ref": "#/definitions/id",
+          "description": "node id to go to on pass (active mode)"
+        },
+        "onFailure": {
+          "$ref": "#/definitions/id",
+          "description": "node id to go to on fail (active mode)"
+        },
+        "dice": {
+          "type": "string",
+          "description": "Per-check dice override in NdM notation. Defaults to project rules / 1d20."
+        },
+        "kind": {
+          "enum": [
+            "priced",
+            "oneshot"
+          ],
+          "description": "Authoring intent (validation/presentation only; runtime ignores). 'priced' (default for active): failure must proceed at a cost. 'oneshot': pass-or-not-forever identity moment, exempt from the proceed requirement."
+        },
+        "acknowledgedLockout": {
+          "type": "boolean",
+          "description": "Only meaningful with kind:'oneshot'. Declares that content reachable only by passing this check is INTENDED to be unreachable on a fail — an identity moment the player meets as whoever they are. Suppresses the REACH oneshot-lockout warning for the nodes behind it, so a project with a legitimate one-shot fork can still run --strict."
+        }
+      },
+      "required": [
+        "mode",
+        "skill",
+        "difficulty"
+      ],
+      "additionalProperties": false
+    },
+    "gameState": {
+      "type": "object",
+      "description": "THE serialized runtime save-state contract (RUNTIME_CONTRACT.md §SerializedGameState). Shared by snapshots and engine save files — define it here so the two can never drift.",
+      "properties": {
+        "flags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "reputation": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "skills": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "counters": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "inventory": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "questStages": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "relationships": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "characterId → standing with that character. Omitted when empty, like `texts`, so saves predating relationships stay valid."
+        },
+        "xp": {
+          "type": "integer",
+          "description": "Total XP earned this playthrough (monotonic)."
+        },
+        "skillPointsSpent": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "skillId → points invested."
+        },
+        "texts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Text-variable values substituted into {var_id} placeholders at render time. Written by set_text; omitted when empty, so saves predating text variables stay valid."
+        },
+        "pendingCutscene": {
+          "$ref": "#/definitions/id",
+          "description": "Cutscene queued via play_cutscene; omitted when none."
+        },
+        "questFired": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Quest stage/outcome effects already fired (once-only), as sorted {questId}/stage/{id} / {questId}/outcome/{id} keys. Omitted when none."
+        }
+      },
+      "required": [
+        "flags",
+        "reputation",
+        "skills",
+        "counters",
+        "inventory",
+        "questStages"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

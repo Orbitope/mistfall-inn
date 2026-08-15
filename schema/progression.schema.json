@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "progression.schema.json",
+  "title": "Progression config",
+  "description": "Project-wide progression tuning (data/progression.json). Absent file means progression is disabled (no XP/levels/skill points).",
+  "type": "object",
+  "properties": {
+    "xpThresholds": {
+      "type": "array",
+      "items": { "type": "integer", "minimum": 0 },
+      "minItems": 1,
+      "description": "XP needed to reach each level (index 0 = level 0). Must be strictly increasing. levelForXp(xp) = highest index whose threshold ≤ xp."
+    },
+    "pointsPerLevel": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Skill points granted per level."
+    },
+    "startingSkills": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 0 },
+      "description": "Character-creation preset loadout: skillId → base value. Effective skill = min(preset + invested, maxSkill)."
+    },
+    "maxSkill": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Per-skill hard ceiling (single global int applies to all skills)."
+    }
+  },
+  "required": ["xpThresholds", "pointsPerLevel", "startingSkills", "maxSkill"],
+  "additionalProperties": false
+}

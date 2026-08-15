@@ -1,0 +1,621 @@
+[
+  {
+    "fn": "chooseChoice",
+    "description": "goto: advances to target node, state unchanged",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Start.",
+          "choices": [
+            {
+              "id": "ch_goto",
+              "text": "Proceed.",
+              "goto": "node_end"
+            }
+          ]
+        },
+        {
+          "id": "node_end",
+          "isEnd": true,
+          "text": "End.",
+          "choices": [
+            {
+              "id": "ch_terminal",
+              "text": "Done."
+            }
+          ]
+        }
+      ]
+    },
+    "nodeId": "node_start",
+    "choiceId": "ch_goto",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "nextNodeId": "node_end",
+      "newState": {
+        "flags": {},
+        "reputation": {},
+        "skills": {},
+        "counters": {},
+        "inventory": [],
+        "questStages": {},
+        "xp": 0,
+        "skillPointsSpent": {}
+      }
+    }
+  },
+  {
+    "fn": "chooseChoice",
+    "description": "goto with effects: effect applied before advancing",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Start.",
+          "choices": [
+            {
+              "id": "ch_flag_goto",
+              "text": "Flag and go.",
+              "goto": "node_end",
+              "effects": [
+                {
+                  "type": "set_flag",
+                  "flag": "took_path",
+                  "value": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "node_end",
+          "isEnd": true,
+          "text": "End."
+        }
+      ]
+    },
+    "nodeId": "node_start",
+    "choiceId": "ch_flag_goto",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "nextNodeId": "node_end",
+      "newState": {
+        "flags": {
+          "took_path": true
+        },
+        "reputation": {},
+        "skills": {},
+        "counters": {},
+        "inventory": [],
+        "questStages": {},
+        "xp": 0,
+        "skillPointsSpent": {}
+      }
+    }
+  },
+  {
+    "fn": "chooseChoice",
+    "description": "active check pass: rng=0.2, roll=5, wit=5, total=10, DC=10 → success branch",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Start.",
+          "choices": [
+            {
+              "id": "ch_check",
+              "text": "Roll.",
+              "check": {
+                "mode": "active",
+                "skill": "wit",
+                "difficulty": 10,
+                "onSuccess": "node_win",
+                "onFailure": "node_lose"
+              }
+            }
+          ]
+        },
+        {
+          "id": "node_win",
+          "isEnd": true,
+          "text": "Won."
+        },
+        {
+          "id": "node_lose",
+          "isEnd": true,
+          "text": "Lost."
+        }
+      ]
+    },
+    "nodeId": "node_start",
+    "choiceId": "ch_check",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 5
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "project": {
+      "factions": {}
+    },
+    "rng": 0.2,
+    "expected": {
+      "nextNodeId": "node_win",
+      "newState": {
+        "flags": {},
+        "reputation": {},
+        "skills": {
+          "wit": 5
+        },
+        "counters": {},
+        "inventory": [],
+        "questStages": {},
+        "xp": 0,
+        "skillPointsSpent": {}
+      },
+      "checkResult": {
+        "passed": true,
+        "roll": 5,
+        "total": 10,
+        "skillValue": 5,
+        "dice": "1d20"
+      }
+    }
+  },
+  {
+    "fn": "chooseChoice",
+    "description": "active check fail: rng=0.0, roll=1, wit=0, total=1, DC=10 → failure branch",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Start.",
+          "choices": [
+            {
+              "id": "ch_check",
+              "text": "Roll.",
+              "check": {
+                "mode": "active",
+                "skill": "wit",
+                "difficulty": 10,
+                "onSuccess": "node_win",
+                "onFailure": "node_lose"
+              }
+            }
+          ]
+        },
+        {
+          "id": "node_win",
+          "isEnd": true,
+          "text": "Won."
+        },
+        {
+          "id": "node_lose",
+          "isEnd": true,
+          "text": "Lost."
+        }
+      ]
+    },
+    "nodeId": "node_start",
+    "choiceId": "ch_check",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 0
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "project": {
+      "factions": {}
+    },
+    "rng": 0,
+    "expected": {
+      "nextNodeId": "node_lose",
+      "newState": {
+        "flags": {},
+        "reputation": {},
+        "skills": {
+          "wit": 0
+        },
+        "counters": {},
+        "inventory": [],
+        "questStages": {},
+        "xp": 0,
+        "skillPointsSpent": {}
+      },
+      "checkResult": {
+        "passed": false,
+        "roll": 1,
+        "total": 1,
+        "skillValue": 0,
+        "dice": "1d20"
+      }
+    }
+  },
+  {
+    "fn": "chooseChoice",
+    "description": "active check with pre-choice effect: effect applied before roll, skill read from post-effect state",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Start.",
+          "choices": [
+            {
+              "id": "ch_effect_then_check",
+              "text": "Buff and roll.",
+              "effects": [
+                {
+                  "type": "set_flag",
+                  "flag": "prepared",
+                  "value": true
+                }
+              ],
+              "check": {
+                "mode": "active",
+                "skill": "wit",
+                "difficulty": 10,
+                "onSuccess": "node_win",
+                "onFailure": "node_lose"
+              }
+            }
+          ]
+        },
+        {
+          "id": "node_win",
+          "isEnd": true,
+          "text": "Won."
+        },
+        {
+          "id": "node_lose",
+          "isEnd": true,
+          "text": "Lost."
+        }
+      ]
+    },
+    "nodeId": "node_start",
+    "choiceId": "ch_effect_then_check",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 5
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "project": {
+      "factions": {}
+    },
+    "rng": 0.2,
+    "expected": {
+      "nextNodeId": "node_win",
+      "newState": {
+        "flags": {
+          "prepared": true
+        },
+        "reputation": {},
+        "skills": {
+          "wit": 5
+        },
+        "counters": {},
+        "inventory": [],
+        "questStages": {},
+        "xp": 0,
+        "skillPointsSpent": {}
+      },
+      "checkResult": {
+        "passed": true,
+        "roll": 5,
+        "total": 10,
+        "skillValue": 5,
+        "dice": "1d20"
+      }
+    }
+  },
+  {
+    "fn": "chooseChoice",
+    "description": "passive check: treated as plain goto, no roll, no checkResult",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Start.",
+          "choices": [
+            {
+              "id": "ch_passive",
+              "text": "Passive.",
+              "goto": "node_win",
+              "check": {
+                "mode": "passive",
+                "skill": "wit",
+                "difficulty": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "node_win",
+          "isEnd": true,
+          "text": "Won."
+        }
+      ]
+    },
+    "nodeId": "node_start",
+    "choiceId": "ch_passive",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 0
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "nextNodeId": "node_win",
+      "newState": {
+        "flags": {},
+        "reputation": {},
+        "skills": {
+          "wit": 0
+        },
+        "counters": {},
+        "inventory": [],
+        "questStages": {},
+        "xp": 0,
+        "skillPointsSpent": {}
+      }
+    }
+  },
+  {
+    "fn": "chooseChoice",
+    "description": "terminal choice (no goto, no check on isEnd node): nextNodeId is null",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_end",
+      "nodes": [
+        {
+          "id": "node_end",
+          "isEnd": true,
+          "text": "End.",
+          "choices": [
+            {
+              "id": "ch_terminal",
+              "text": "Done."
+            }
+          ]
+        }
+      ]
+    },
+    "nodeId": "node_end",
+    "choiceId": "ch_terminal",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "nextNodeId": null,
+      "newState": {
+        "flags": {},
+        "reputation": {},
+        "skills": {},
+        "counters": {},
+        "inventory": [],
+        "questStages": {},
+        "xp": 0,
+        "skillPointsSpent": {}
+      }
+    }
+  },
+  {
+    "fn": "chooseChoice",
+    "description": "multiple effects threaded in order: flag then reputation",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Start.",
+          "choices": [
+            {
+              "id": "ch_multi_effect",
+              "text": "Two effects.",
+              "goto": "node_end",
+              "effects": [
+                {
+                  "type": "set_flag",
+                  "flag": "done",
+                  "value": true
+                },
+                {
+                  "type": "adjust_reputation",
+                  "faction": "guild",
+                  "delta": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "node_end",
+          "isEnd": true,
+          "text": "End."
+        }
+      ]
+    },
+    "nodeId": "node_start",
+    "choiceId": "ch_multi_effect",
+    "state": {
+      "flags": {},
+      "reputation": {
+        "guild": 0
+      },
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "project": {
+      "factions": {
+        "guild": {
+          "id": "guild",
+          "name": "Guild",
+          "summary": "s",
+          "reputationRange": {
+            "min": -10,
+            "max": 10
+          }
+        }
+      }
+    },
+    "expected": {
+      "nextNodeId": "node_end",
+      "newState": {
+        "flags": {
+          "done": true
+        },
+        "reputation": {
+          "guild": 2
+        },
+        "skills": {},
+        "counters": {},
+        "inventory": [],
+        "questStages": {},
+        "xp": 0,
+        "skillPointsSpent": {}
+      }
+    }
+  },
+  {
+    "fn": "chooseChoice",
+    "description": "give_item effect: item appears in inventory after choice",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Start.",
+          "choices": [
+            {
+              "id": "ch_loot",
+              "text": "Take the key.",
+              "goto": "node_end",
+              "effects": [
+                {
+                  "type": "give_item",
+                  "item": "key_card"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "node_end",
+          "isEnd": true,
+          "text": "End."
+        }
+      ]
+    },
+    "nodeId": "node_start",
+    "choiceId": "ch_loot",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "nextNodeId": "node_end",
+      "newState": {
+        "flags": {},
+        "reputation": {},
+        "skills": {},
+        "counters": {},
+        "inventory": [
+          "key_card"
+        ],
+        "questStages": {},
+        "xp": 0,
+        "skillPointsSpent": {}
+      }
+    }
+  }
+]

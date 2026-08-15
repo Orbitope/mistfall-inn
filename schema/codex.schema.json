@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "codex.schema.json",
+  "title": "Codex entry",
+  "description": "A player-facing knowledge entry — the codex / bestiary / glossary the player reads in-game. Distinct from /lore, which is authoring canon and never shipped: this is narrative text the player sees, so it lives in data/ and is localized like any other player-facing string.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/definitions/id" },
+    "name": { "type": "string", "description": "Entry title as the player sees it." },
+    "body": { "type": "string", "description": "The entry's player-facing text." },
+    "category": {
+      "type": "string",
+      "description": "Project-defined grouping for the codex UI, e.g. people / places / history. Free-form on purpose: the taxonomy is per-project, not a Parlance concept."
+    },
+    "unlockedBy": {
+      "$ref": "common.schema.json#/definitions/condition",
+      "description": "Condition that reveals this entry. ABSENT MEANS ALWAYS UNLOCKED — unlike an ending, a codex entry is often available from the start."
+    },
+    "loreRef": { "$ref": "common.schema.json#/definitions/loreRef" },
+    "tags": { "$ref": "common.schema.json#/definitions/tags" }
+  },
+  "required": ["id", "name", "body"],
+  "additionalProperties": false
+}

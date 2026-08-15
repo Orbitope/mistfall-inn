@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "skill.schema.json",
+  "title": "Skill",
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/definitions/id"
+    },
+    "name": {
+      "type": "string"
+    },
+    "cluster": {
+      "type": "string",
+      "description": "Optional project-defined grouping, e.g. body / mind / heart. Free-form on purpose: clusters are a per-project taxonomy, not a Parlance concept — a project that does not group its skills omits it."
+    },
+    "description": {
+      "type": "string"
+    },
+    "voice": {
+      "type": "string",
+      "description": "How this skill 'talks' in the player's head, for projects where skills are voiced as inner characters rather than silent stats."
+    },
+    "loreRef": {
+      "$ref": "common.schema.json#/definitions/loreRef"
+    },
+    "tags": {
+      "$ref": "common.schema.json#/definitions/tags"
+    },
+    "max": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Per-skill hard ceiling, overriding progression.maxSkill for this skill (e.g. a signature skill that caps higher). Absent = the global maxSkill applies."
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "description"
+  ],
+  "additionalProperties": false
+}

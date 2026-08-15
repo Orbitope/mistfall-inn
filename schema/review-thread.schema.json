@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "review-thread.schema.json",
+  "title": "Review thread",
+  "description": "One comment thread, stored as review/<reviewId>/threads/<id>.json. One file per thread is the concurrency unit: two reviewers commenting on different threads never touch the same file, and concurrent comments on ONE thread merge by comment-id union, so review data never produces a textual git conflict. Comments are append-only.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "description": "Envelope format version. Current: 1.",
+      "const": 1
+    },
+    "id": { "$ref": "common.schema.json#/definitions/id" },
+    "reviewId": { "$ref": "common.schema.json#/definitions/id" },
+    "anchor": {
+      "type": "object",
+      "description": "Where the thread hangs. Absent means the thread is on the review request itself. Staleness is never stored — it is computed by resolving `key` against the current project, so reverting a rename un-stales the thread.",
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "An anchor key — the same path vocabulary localization uses, e.g. dialogue/dlg_arrival/nodes/node_open/text, dialogue/dlg_arrival/nodes/node_open, quest/qst_inquest/stages/stg_body/description, character/npc_wren. Authoritative; entityType and entityId below are denormalized from it for cheap grouping."
+        },
+        "entityType": {
+          "type": "string",
+          "description": "ProjectData collection the key addresses, e.g. \"dialogues\"."
+        },
+        "entityId": { "type": "string" }
+      },
+      "required": ["key", "entityType", "entityId"],
+      "additionalProperties": false
+    },
+    "status": { "type": "string", "enum": ["open", "resolved"] },
+    "comments": {
+      "type": "array",
+      "description": "Append-only. Merges union by id; editing or deleting a comment in place would break that guarantee.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "$ref": "common.schema.json#/definitions/id" },
+          "author": { "type": "string" },
+          "at": { "type": "string", "description": "ISO 8601 timestamp." },
+          "body": { "type": "string" }
+        },
+        "required": ["id", "author", "at", "body"],
+        "additionalProperties": false
+      }
+    },
+    "suggestion": {
+      "type": "object",
+      "description": "Proposed replacement text for the anchored field. Only valid on a field anchor (one naming a text field); a suggestion on a structural anchor is a REV error.",
+      "properties": {
+        "replacement": { "type": "string" },
+        "appliedAt": { "type": "string", "description": "ISO 8601 timestamp. Present once the author applied it." },
+        "appliedBy": { "type": "string" }
+      },
+      "required": ["replacement"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["schemaVersion", "id", "reviewId", "status", "comments"],
+  "additionalProperties": false
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "snapshot.schema.json",
+  "title": "Snapshot (named game-state baseline)",
+  "description": "A reusable, named game-state baseline for playtesting and route tests. The inner `state` is the exact serialized runtime save-state contract, so snapshots and real player saves are format-compatible. `schemaVersion` lives on the envelope, not inside `state`.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "description": "Envelope format version. Current: 1.",
+      "const": 1
+    },
+    "id": { "$ref": "common.schema.json#/definitions/id" },
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "tags": { "$ref": "common.schema.json#/definitions/tags" },
+    "state": { "$ref": "common.schema.json#/definitions/gameState" }
+  },
+  "required": ["schemaVersion", "id", "name", "state"],
+  "additionalProperties": false
+}

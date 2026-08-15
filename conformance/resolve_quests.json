@@ -1,0 +1,120 @@
+[
+  {
+    "fn": "resolveQuests",
+    "description": "fires an outcome's effects once when reachedWhen becomes true",
+    "state": { "flags": { "proved": true }, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 0, "skillPointsSpent": {} },
+    "project": {
+      "factions": {},
+      "quests": {
+        "q_trial": {
+          "id": "q_trial", "name": "Trial", "summary": "s",
+          "stages": [{ "id": "s1", "order": 1, "description": "d" }],
+          "outcomes": [{ "id": "out_won", "kind": "success", "description": "d", "reachedWhen": { "type": "flag", "flag": "proved", "value": true }, "effects": [{ "type": "grant_xp", "amount": 250 }] }]
+        }
+      }
+    },
+    "expected": {
+      "state": { "flags": { "proved": true }, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 250, "skillPointsSpent": {}, "questFired": ["q_trial/outcome/out_won"] },
+      "firings": [{ "quest": "q_trial", "kind": "outcome", "id": "out_won" }]
+    }
+  },
+  {
+    "fn": "resolveQuests",
+    "description": "does not fire while the condition is false",
+    "state": { "flags": { "proved": false }, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 0, "skillPointsSpent": {} },
+    "project": {
+      "factions": {},
+      "quests": {
+        "q_trial": {
+          "id": "q_trial", "name": "Trial", "summary": "s",
+          "stages": [{ "id": "s1", "order": 1, "description": "d" }],
+          "outcomes": [{ "id": "out_won", "kind": "success", "description": "d", "reachedWhen": { "type": "flag", "flag": "proved", "value": true }, "effects": [{ "type": "grant_xp", "amount": 250 }] }]
+        }
+      }
+    },
+    "expected": {
+      "state": { "flags": { "proved": false }, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 0, "skillPointsSpent": {} },
+      "firings": []
+    }
+  },
+  {
+    "fn": "resolveQuests",
+    "description": "never re-fires an item already recorded in questFired",
+    "state": { "flags": { "proved": true }, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 250, "skillPointsSpent": {}, "questFired": ["q_trial/outcome/out_won"] },
+    "project": {
+      "factions": {},
+      "quests": {
+        "q_trial": {
+          "id": "q_trial", "name": "Trial", "summary": "s",
+          "stages": [{ "id": "s1", "order": 1, "description": "d" }],
+          "outcomes": [{ "id": "out_won", "kind": "success", "description": "d", "reachedWhen": { "type": "flag", "flag": "proved", "value": true }, "effects": [{ "type": "grant_xp", "amount": 250 }] }]
+        }
+      }
+    },
+    "expected": {
+      "state": { "flags": { "proved": true }, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 250, "skillPointsSpent": {}, "questFired": ["q_trial/outcome/out_won"] },
+      "firings": []
+    }
+  },
+  {
+    "fn": "resolveQuests",
+    "description": "effects with no condition (reachedWhen absent) never auto-fire",
+    "state": { "flags": {}, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 0, "skillPointsSpent": {} },
+    "project": {
+      "factions": {},
+      "quests": {
+        "q_orphan": {
+          "id": "q_orphan", "name": "Orphan", "summary": "s",
+          "stages": [{ "id": "s1", "order": 1, "description": "d" }],
+          "outcomes": [{ "id": "out_never", "kind": "success", "description": "d", "effects": [{ "type": "grant_xp", "amount": 100 }] }]
+        }
+      }
+    },
+    "expected": {
+      "state": { "flags": {}, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 0, "skillPointsSpent": {} },
+      "firings": []
+    }
+  },
+  {
+    "fn": "resolveQuests",
+    "description": "stage onComplete fires when its completeWhen holds",
+    "state": { "flags": { "arrived": true }, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 0, "skillPointsSpent": {} },
+    "project": {
+      "factions": {},
+      "quests": {
+        "q_walk": {
+          "id": "q_walk", "name": "Walk", "summary": "s",
+          "stages": [{ "id": "s_go", "order": 1, "description": "d", "completeWhen": { "type": "flag", "flag": "arrived", "value": true }, "onComplete": [{ "type": "adjust_counter", "counter": "ct_steps", "delta": 3 }] }]
+        }
+      }
+    },
+    "expected": {
+      "state": { "flags": { "arrived": true }, "reputation": {}, "skills": {}, "counters": { "ct_steps": 3 }, "inventory": [], "questStages": {}, "xp": 0, "skillPointsSpent": {}, "questFired": ["q_walk/stage/s_go"] },
+      "firings": [{ "quest": "q_walk", "kind": "stage", "id": "s_go" }]
+    }
+  },
+  {
+    "fn": "resolveQuests",
+    "description": "cascade to fixpoint: one firing's set_flag satisfies another quest's condition",
+    "state": { "flags": { "step_one": true }, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 0, "skillPointsSpent": {} },
+    "project": {
+      "factions": {},
+      "quests": {
+        "q_a": {
+          "id": "q_a", "name": "A", "summary": "s",
+          "stages": [{ "id": "s1", "order": 1, "description": "d" }],
+          "outcomes": [{ "id": "out_a", "kind": "success", "description": "d", "reachedWhen": { "type": "flag", "flag": "step_one", "value": true }, "effects": [{ "type": "set_flag", "flag": "step_two", "value": true }] }]
+        },
+        "q_b": {
+          "id": "q_b", "name": "B", "summary": "s",
+          "stages": [{ "id": "s1", "order": 1, "description": "d" }],
+          "outcomes": [{ "id": "out_b", "kind": "success", "description": "d", "reachedWhen": { "type": "flag", "flag": "step_two", "value": true }, "effects": [{ "type": "grant_xp", "amount": 50 }] }]
+        }
+      }
+    },
+    "expected": {
+      "state": { "flags": { "step_one": true, "step_two": true }, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 50, "skillPointsSpent": {}, "questFired": ["q_a/outcome/out_a", "q_b/outcome/out_b"] },
+      "firings": [{ "quest": "q_a", "kind": "outcome", "id": "out_a" }, { "quest": "q_b", "kind": "outcome", "id": "out_b" }]
+    }
+  }
+]

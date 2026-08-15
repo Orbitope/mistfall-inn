@@ -1,0 +1,584 @@
+[
+  {
+    "fn": "resolveCheck",
+    "description": "minimum roll: rng=0.0 \u2192 roll=1, wit=0, DC=1 \u2192 pass (1 >= 1)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 0
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 1,
+      "onSuccess": "node_win",
+      "onFailure": "node_lose"
+    },
+    "rng": 0,
+    "expected": {
+      "passed": true,
+      "roll": 1,
+      "total": 1,
+      "skillValue": 0,
+      "dice": "1d20"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "minimum roll: rng=0.0 \u2192 roll=1, wit=0, DC=2 \u2192 fail (1 < 2)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 0
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 2,
+      "onSuccess": "node_win",
+      "onFailure": "node_lose"
+    },
+    "rng": 0,
+    "expected": {
+      "passed": false,
+      "roll": 1,
+      "total": 1,
+      "skillValue": 0,
+      "dice": "1d20"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "maximum roll: rng=0.95 \u2192 roll=20, wit=0, DC=20 \u2192 pass (20 >= 20)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 0
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 20,
+      "onSuccess": "node_win",
+      "onFailure": "node_lose"
+    },
+    "rng": 0.95,
+    "expected": {
+      "passed": true,
+      "roll": 20,
+      "total": 20,
+      "skillValue": 0,
+      "dice": "1d20"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "impossible: rng=0.95 \u2192 roll=20, wit=0, DC=21 \u2192 fail (20 < 21)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 0
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 21,
+      "onSuccess": "node_win",
+      "onFailure": "node_lose"
+    },
+    "rng": 0.95,
+    "expected": {
+      "passed": false,
+      "roll": 20,
+      "total": 20,
+      "skillValue": 0,
+      "dice": "1d20"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "exact threshold with skill: rng=0.2 \u2192 roll=5, wit=5, DC=10 \u2192 pass (10 >= 10)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 5
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 10,
+      "onSuccess": "node_win",
+      "onFailure": "node_lose"
+    },
+    "rng": 0.2,
+    "expected": {
+      "passed": true,
+      "roll": 5,
+      "total": 10,
+      "skillValue": 5,
+      "dice": "1d20"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "one below threshold: rng=0.2 \u2192 roll=5, wit=4, DC=10 \u2192 fail (9 < 10)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 4
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 10,
+      "onSuccess": "node_win",
+      "onFailure": "node_lose"
+    },
+    "rng": 0.2,
+    "expected": {
+      "passed": false,
+      "roll": 5,
+      "total": 9,
+      "skillValue": 4,
+      "dice": "1d20"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "missing skill key defaults to 0: rng=0.5 \u2192 roll=11, wit missing, DC=10 \u2192 pass (11 >= 10)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 10,
+      "onSuccess": "node_win",
+      "onFailure": "node_lose"
+    },
+    "rng": 0.5,
+    "expected": {
+      "passed": true,
+      "roll": 11,
+      "total": 11,
+      "skillValue": 0,
+      "dice": "1d20"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "skill adds to roll: rng=0.5 \u2192 roll=11, wit=3, DC=14 \u2192 pass (14 >= 14)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 3
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 14,
+      "onSuccess": "node_win",
+      "onFailure": "node_lose"
+    },
+    "rng": 0.5,
+    "expected": {
+      "passed": true,
+      "roll": 11,
+      "total": 14,
+      "skillValue": 3,
+      "dice": "1d20"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "per-check 2d6: rng=[0.99,0.99] -> roll=12, wit=2, DC=8 -> pass",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 2
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 8,
+      "onSuccess": "node_win",
+      "onFailure": "node_lose",
+      "dice": "2d6"
+    },
+    "rng": [
+      0.99,
+      0.99
+    ],
+    "expected": {
+      "passed": true,
+      "roll": 12,
+      "total": 14,
+      "skillValue": 2,
+      "dice": "2d6"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "per-check 1d100: rng=0.5 -> roll=51, wit=0, DC=51 -> pass (51>=51)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 0
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 51,
+      "onSuccess": "node_win",
+      "onFailure": "node_lose",
+      "dice": "1d100"
+    },
+    "rng": 0.5,
+    "expected": {
+      "passed": true,
+      "roll": 51,
+      "total": 51,
+      "skillValue": 0,
+      "dice": "1d100"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "project defaultDice 2d6 (no check.dice): rng=[0.0,0.5] -> roll=5, wit=0, DC=10 -> fail",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 0
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 10,
+      "onSuccess": "node_win",
+      "onFailure": "node_lose"
+    },
+    "rng": [
+      0,
+      0.5
+    ],
+    "defaultDice": "2d6",
+    "expected": {
+      "passed": false,
+      "roll": 5,
+      "total": 5,
+      "skillValue": 0,
+      "dice": "2d6"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "criticals off (default): 2d6 snake eyes still just sums \u2014 2 + 20 skill beats DC 10",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 20
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 10,
+      "dice": "2d6"
+    },
+    "rng": [
+      0.0,
+      0.0
+    ],
+    "expected": {
+      "passed": true,
+      "roll": 2,
+      "total": 22,
+      "skillValue": 20,
+      "dice": "2d6"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "criticals on: 2d6 snake eyes ALWAYS fails, even at skill 20 vs DC 10",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 20
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 10,
+      "dice": "2d6"
+    },
+    "rng": [
+      0.0,
+      0.0
+    ],
+    "criticals": true,
+    "expected": {
+      "passed": false,
+      "roll": 2,
+      "total": 22,
+      "skillValue": 20,
+      "dice": "2d6",
+      "critical": "failure"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "criticals on: 2d6 boxcars ALWAYS succeeds, even at skill 0 vs DC 99",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 0
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 99,
+      "dice": "2d6"
+    },
+    "rng": [
+      0.99,
+      0.99
+    ],
+    "criticals": true,
+    "expected": {
+      "passed": true,
+      "roll": 12,
+      "total": 12,
+      "skillValue": 0,
+      "dice": "2d6",
+      "critical": "success"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "criticals on: a mixed roll summing to the same total is NOT critical (1+6 vs 6+6)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 0
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 99,
+      "dice": "2d6"
+    },
+    "rng": [
+      0.0,
+      0.99
+    ],
+    "criticals": true,
+    "expected": {
+      "passed": false,
+      "roll": 7,
+      "total": 7,
+      "skillValue": 0,
+      "dice": "2d6"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "criticals on: only SOME dice on the extreme is not critical (6,6,1 on 3d6)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 0
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 5,
+      "dice": "3d6"
+    },
+    "rng": [
+      0.99,
+      0.99,
+      0.0
+    ],
+    "criticals": true,
+    "expected": {
+      "passed": true,
+      "roll": 13,
+      "total": 13,
+      "skillValue": 0,
+      "dice": "3d6"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "criticals on: 1d20 natural 20 always succeeds",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 0
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 99
+    },
+    "rng": 0.99,
+    "criticals": true,
+    "expected": {
+      "passed": true,
+      "roll": 20,
+      "total": 20,
+      "skillValue": 0,
+      "dice": "1d20",
+      "critical": "success"
+    }
+  },
+  {
+    "fn": "resolveCheck",
+    "description": "criticals on: 1d20 natural 1 always fails",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 50
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "check": {
+      "mode": "active",
+      "skill": "wit",
+      "difficulty": 5
+    },
+    "rng": 0.0,
+    "criticals": true,
+    "expected": {
+      "passed": false,
+      "roll": 1,
+      "total": 51,
+      "skillValue": 50,
+      "dice": "1d20",
+      "critical": "failure"
+    }
+  }
+]

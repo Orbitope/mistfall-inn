@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "faction.schema.json",
+  "title": "Faction",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/definitions/id" },
+    "name": { "type": "string" },
+    "summary": { "type": "string" },
+    "reputationRange": {
+      "type": "object",
+      "properties": { "min": {"type":"integer"}, "max": {"type":"integer"} },
+      "required": ["min","max"],
+      "additionalProperties": false
+    },
+    "opposes": { "type": "array", "items": { "$ref": "common.schema.json#/definitions/id" } },
+    "alliedWith": { "type": "array", "items": { "$ref": "common.schema.json#/definitions/id" } },
+    "loreRef": { "$ref": "common.schema.json#/definitions/loreRef" },
+    "tags": { "$ref": "common.schema.json#/definitions/tags" }
+  },
+  "required": ["id", "name", "summary", "reputationRange"],
+  "additionalProperties": false
+}

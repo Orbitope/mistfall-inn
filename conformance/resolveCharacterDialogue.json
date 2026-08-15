@@ -1,0 +1,129 @@
+[
+  {
+    "fn": "resolveCharacterDialogue",
+    "description": "first-match wins: highest passing rung is returned even when lower rungs also pass",
+    "state": {
+      "flags": { "betrayed": true, "met": true },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {}
+    },
+    "character": {
+      "id": "char_wren",
+      "name": "Wren",
+      "archetype": "operative",
+      "dialogues": [
+        { "dialogue": "d_confront", "showIf": { "type": "flag", "flag": "betrayed", "value": true } },
+        { "dialogue": "d_post_meeting", "showIf": { "type": "flag", "flag": "met", "value": true } },
+        { "dialogue": "d_first_meeting" }
+      ]
+    },
+    "expected": "d_confront"
+  },
+  {
+    "fn": "resolveCharacterDialogue",
+    "description": "unconditional rung above shadows a later matching rung",
+    "state": {
+      "flags": { "met": true },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {}
+    },
+    "character": {
+      "id": "char_wren",
+      "name": "Wren",
+      "archetype": "operative",
+      "dialogues": [
+        { "dialogue": "d_idle" },
+        { "dialogue": "d_post_meeting", "showIf": { "type": "flag", "flag": "met", "value": true } }
+      ]
+    },
+    "expected": "d_idle"
+  },
+  {
+    "fn": "resolveCharacterDialogue",
+    "description": "fallthrough: rung with no showIf is selected when nothing above matches",
+    "state": {
+      "flags": { "betrayed": false, "met": false },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {}
+    },
+    "character": {
+      "id": "char_wren",
+      "name": "Wren",
+      "archetype": "operative",
+      "dialogues": [
+        { "dialogue": "d_confront", "showIf": { "type": "flag", "flag": "betrayed", "value": true } },
+        { "dialogue": "d_post_meeting", "showIf": { "type": "flag", "flag": "met", "value": true } },
+        { "dialogue": "d_first_meeting" }
+      ]
+    },
+    "expected": "d_first_meeting"
+  },
+  {
+    "fn": "resolveCharacterDialogue",
+    "description": "empty ladder resolves to null",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {}
+    },
+    "character": {
+      "id": "char_mute",
+      "name": "Mute",
+      "archetype": "operative",
+      "dialogues": []
+    },
+    "expected": null
+  },
+  {
+    "fn": "resolveCharacterDialogue",
+    "description": "absent ladder resolves to null",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {}
+    },
+    "character": {
+      "id": "char_mute",
+      "name": "Mute",
+      "archetype": "operative"
+    },
+    "expected": null
+  },
+  {
+    "fn": "resolveCharacterDialogue",
+    "description": "no rung matches (all gated, none satisfied) resolves to null",
+    "state": {
+      "flags": { "betrayed": false, "met": false },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {}
+    },
+    "character": {
+      "id": "char_wren",
+      "name": "Wren",
+      "archetype": "operative",
+      "dialogues": [
+        { "dialogue": "d_confront", "showIf": { "type": "flag", "flag": "betrayed", "value": true } },
+        { "dialogue": "d_post_meeting", "showIf": { "type": "flag", "flag": "met", "value": true } }
+      ]
+    },
+    "expected": null
+  }
+]

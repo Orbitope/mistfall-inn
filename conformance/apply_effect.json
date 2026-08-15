@@ -1,0 +1,985 @@
+[
+  {
+    "fn": "applyEffect",
+    "description": "grant_xp: adds to total xp (monotonic)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 150,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "grant_xp",
+      "amount": 200
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 350,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "set_flag: sets flag to true",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "set_flag",
+      "flag": "seen",
+      "value": true
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {
+        "seen": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "set_flag: overwrites existing flag to false",
+    "state": {
+      "flags": {
+        "seen": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "set_flag",
+      "flag": "seen",
+      "value": false
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {
+        "seen": false
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "adjust_reputation: normal delta within range",
+    "state": {
+      "flags": {},
+      "reputation": {
+        "guild": 2
+      },
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "adjust_reputation",
+      "faction": "guild",
+      "delta": 3
+    },
+    "project": {
+      "factions": {
+        "guild": {
+          "id": "guild",
+          "name": "Guild",
+          "summary": "s",
+          "reputationRange": {
+            "min": -10,
+            "max": 10
+          }
+        }
+      }
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {
+        "guild": 5
+      },
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "adjust_reputation: clamped at max",
+    "state": {
+      "flags": {},
+      "reputation": {
+        "guild": 8
+      },
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "adjust_reputation",
+      "faction": "guild",
+      "delta": 5
+    },
+    "project": {
+      "factions": {
+        "guild": {
+          "id": "guild",
+          "name": "Guild",
+          "summary": "s",
+          "reputationRange": {
+            "min": -10,
+            "max": 10
+          }
+        }
+      }
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {
+        "guild": 10
+      },
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "adjust_reputation: clamped at min",
+    "state": {
+      "flags": {},
+      "reputation": {
+        "guild": -8
+      },
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "adjust_reputation",
+      "faction": "guild",
+      "delta": -5
+    },
+    "project": {
+      "factions": {
+        "guild": {
+          "id": "guild",
+          "name": "Guild",
+          "summary": "s",
+          "reputationRange": {
+            "min": -10,
+            "max": 10
+          }
+        }
+      }
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {
+        "guild": -10
+      },
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "adjust_reputation: unknown faction \u2014 no clamp, raw delta applied",
+    "state": {
+      "flags": {},
+      "reputation": {
+        "unknown": 3
+      },
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "adjust_reputation",
+      "faction": "unknown",
+      "delta": 100
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {
+        "unknown": 103
+      },
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "adjust_counter: positive delta",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {
+        "stamina": 5
+      },
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "adjust_counter",
+      "counter": "stamina",
+      "delta": 3
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {
+        "stamina": 8
+      },
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "adjust_counter: negative delta (unbounded, may go below zero)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {
+        "stamina": 2
+      },
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "adjust_counter",
+      "counter": "stamina",
+      "delta": -5
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {
+        "stamina": -3
+      },
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "adjust_counter: missing key defaults to 0 before delta",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "adjust_counter",
+      "counter": "steps",
+      "delta": 1
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {
+        "steps": 1
+      },
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "give_item: adds item to inventory",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "give_item",
+      "item": "key_card"
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [
+        "key_card"
+      ],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "give_item: idempotent \u2014 giving an already-held item leaves inventory unchanged",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [
+        "key_card"
+      ],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "give_item",
+      "item": "key_card"
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [
+        "key_card"
+      ],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "take_item: removes held item",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [
+        "key_card"
+      ],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "take_item",
+      "item": "key_card"
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "take_item: no-op when item not held",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "take_item",
+      "item": "key_card"
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "advance_quest: fresh quest \u2014 sets questStages entry",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "advance_quest",
+      "quest": "quest_main",
+      "toStage": "stg_enter"
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "quest_main": "stg_enter"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "advance_quest: overwrites existing stage for same quest",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "quest_main": "stg_enter"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "advance_quest",
+      "quest": "quest_main",
+      "toStage": "stg_follow_up"
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "quest_main": "stg_follow_up"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "advance_quest: does not affect other quests' stages",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "quest_side": "stg_active"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "advance_quest",
+      "quest": "quest_main",
+      "toStage": "stg_enter"
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "quest_side": "stg_active",
+        "quest_main": "stg_enter"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "set_active_dialogue: sets the active_dialogue__{character} flag (feed model)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "set_active_dialogue",
+      "character": "npc_guard",
+      "dialogue": "dlg_warning"
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {
+        "active_dialogue__npc_guard": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "play_cutscene: sets pendingCutscene",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "play_cutscene",
+      "cutscene": "cs_watchtower_signal"
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "pendingCutscene": "cs_watchtower_signal",
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "play_cutscene: overwrites an already-pending cutscene",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "pendingCutscene": "cs_old",
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "play_cutscene",
+      "cutscene": "cs_new"
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "pendingCutscene": "cs_new",
+      "xp": 0,
+      "skillPointsSpent": {}
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "set_text: fresh text variable \u2014 creates the texts entry",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "set_text",
+      "variable": "player_name",
+      "value": "Wren"
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "texts": {
+        "player_name": "Wren"
+      }
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "set_text: overwrites an existing text value (last write wins)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "texts": {
+        "player_name": "Wren"
+      }
+    },
+    "effect": {
+      "type": "set_text",
+      "variable": "player_name",
+      "value": "Sixteen"
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "texts": {
+        "player_name": "Sixteen"
+      }
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "set_text: leaves other text variables alone",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "texts": {
+        "town_name": "Mistfall",
+        "player_name": "Wren"
+      }
+    },
+    "effect": {
+      "type": "set_text",
+      "variable": "player_name",
+      "value": "Sixteen"
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "texts": {
+        "town_name": "Mistfall",
+        "player_name": "Sixteen"
+      }
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "texts survives a serialize/deserialize round-trip through an unrelated effect",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "texts": {
+        "player_name": "Wren"
+      }
+    },
+    "effect": {
+      "type": "set_flag",
+      "flag": "named_self",
+      "value": true
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {
+        "named_self": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "texts": {
+        "player_name": "Wren"
+      }
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "adjust_relationship: raises standing from an absent key (treated as 0)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "effect": {
+      "type": "adjust_relationship",
+      "character": "npc_a",
+      "delta": 2
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "relationships": {
+        "npc_a": 2
+      }
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "adjust_relationship: adds to existing standing",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "relationships": {
+        "npc_a": 2
+      }
+    },
+    "effect": {
+      "type": "adjust_relationship",
+      "character": "npc_a",
+      "delta": 3
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "relationships": {
+        "npc_a": 5
+      }
+    }
+  },
+  {
+    "fn": "applyEffect",
+    "description": "adjust_relationship: a negative delta lowers standing below zero (unclamped)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "relationships": {
+        "npc_a": 1
+      }
+    },
+    "effect": {
+      "type": "adjust_relationship",
+      "character": "npc_a",
+      "delta": -4
+    },
+    "project": {
+      "factions": {}
+    },
+    "expected": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "relationships": {
+        "npc_a": -3
+      }
+    }
+  }
+]

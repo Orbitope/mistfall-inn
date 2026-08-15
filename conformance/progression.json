@@ -1,0 +1,96 @@
+[
+  {
+    "fn": "levelForXp",
+    "description": "level 0 at xp 0 (first threshold)",
+    "config": { "xpThresholds": [0, 100, 250, 450, 700, 1000], "pointsPerLevel": 1, "startingSkills": { "wit": 1, "lore": 2 }, "maxSkill": 4 },
+    "xp": 0,
+    "expected": 0
+  },
+  {
+    "fn": "levelForXp",
+    "description": "still level 0 one xp below the next threshold",
+    "config": { "xpThresholds": [0, 100, 250, 450, 700, 1000], "pointsPerLevel": 1, "startingSkills": { "wit": 1, "lore": 2 }, "maxSkill": 4 },
+    "xp": 99,
+    "expected": 0
+  },
+  {
+    "fn": "levelForXp",
+    "description": "reaches level 1 exactly at the threshold",
+    "config": { "xpThresholds": [0, 100, 250, 450, 700, 1000], "pointsPerLevel": 1, "startingSkills": { "wit": 1, "lore": 2 }, "maxSkill": 4 },
+    "xp": 100,
+    "expected": 1
+  },
+  {
+    "fn": "levelForXp",
+    "description": "mid-table level",
+    "config": { "xpThresholds": [0, 100, 250, 450, 700, 1000], "pointsPerLevel": 1, "startingSkills": { "wit": 1, "lore": 2 }, "maxSkill": 4 },
+    "xp": 450,
+    "expected": 3
+  },
+  {
+    "fn": "levelForXp",
+    "description": "caps at the highest threshold index",
+    "config": { "xpThresholds": [0, 100, 250, 450, 700, 1000], "pointsPerLevel": 1, "startingSkills": { "wit": 1, "lore": 2 }, "maxSkill": 4 },
+    "xp": 5000,
+    "expected": 5
+  },
+  {
+    "fn": "pointsEarned",
+    "description": "points = level × pointsPerLevel (flat 1)",
+    "config": { "xpThresholds": [0, 100, 250, 450, 700, 1000], "pointsPerLevel": 1, "startingSkills": { "wit": 1, "lore": 2 }, "maxSkill": 4 },
+    "xp": 450,
+    "expected": 3
+  },
+  {
+    "fn": "pointsEarned",
+    "description": "points scale with pointsPerLevel",
+    "config": { "xpThresholds": [0, 100, 250, 450, 700, 1000], "pointsPerLevel": 2, "startingSkills": { "wit": 1, "lore": 2 }, "maxSkill": 4 },
+    "xp": 450,
+    "expected": 6
+  },
+  {
+    "fn": "availablePoints",
+    "description": "available = earned − Σ invested",
+    "config": { "xpThresholds": [0, 100, 250, 450, 700, 1000], "pointsPerLevel": 1, "startingSkills": { "wit": 1, "lore": 2 }, "maxSkill": 4 },
+    "state": { "flags": {}, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 450, "skillPointsSpent": { "wit": 1 } },
+    "expected": 2
+  },
+  {
+    "fn": "investSkillPoint",
+    "description": "invest raises the skill and consumes a point",
+    "config": { "xpThresholds": [0, 100, 250, 450, 700, 1000], "pointsPerLevel": 1, "startingSkills": { "wit": 1, "lore": 2 }, "maxSkill": 4 },
+    "state": { "flags": {}, "reputation": {}, "skills": { "wit": 1, "lore": 2 }, "counters": {}, "inventory": [], "questStages": {}, "xp": 100, "skillPointsSpent": {} },
+    "skillId": "wit",
+    "expected": { "flags": {}, "reputation": {}, "skills": { "wit": 2, "lore": 2 }, "counters": {}, "inventory": [], "questStages": {}, "xp": 100, "skillPointsSpent": { "wit": 1 } }
+  },
+  {
+    "fn": "investSkillPoint",
+    "description": "guard: no available points → no-op",
+    "config": { "xpThresholds": [0, 100, 250, 450, 700, 1000], "pointsPerLevel": 1, "startingSkills": { "wit": 1, "lore": 2 }, "maxSkill": 4 },
+    "state": { "flags": {}, "reputation": {}, "skills": { "wit": 1, "lore": 2 }, "counters": {}, "inventory": [], "questStages": {}, "xp": 0, "skillPointsSpent": {} },
+    "skillId": "wit",
+    "expected": { "flags": {}, "reputation": {}, "skills": { "wit": 1, "lore": 2 }, "counters": {}, "inventory": [], "questStages": {}, "xp": 0, "skillPointsSpent": {} }
+  },
+  {
+    "fn": "investSkillPoint",
+    "description": "guard: skill already at maxSkill → no-op (point not wasted)",
+    "config": { "xpThresholds": [0, 100, 250, 450, 700, 1000], "pointsPerLevel": 1, "startingSkills": { "wit": 1, "lore": 2 }, "maxSkill": 4 },
+    "state": { "flags": {}, "reputation": {}, "skills": { "wit": 1, "lore": 4 }, "counters": {}, "inventory": [], "questStages": {}, "xp": 1000, "skillPointsSpent": { "lore": 2 } },
+    "skillId": "lore",
+    "expected": { "flags": {}, "reputation": {}, "skills": { "wit": 1, "lore": 4 }, "counters": {}, "inventory": [], "questStages": {}, "xp": 1000, "skillPointsSpent": { "lore": 2 } }
+  },
+  {
+    "fn": "recomputeSkills",
+    "description": "skills = min(preset + invested, maxSkill)",
+    "config": { "xpThresholds": [0, 100, 250, 450, 700, 1000], "pointsPerLevel": 1, "startingSkills": { "wit": 1, "lore": 2 }, "maxSkill": 4 },
+    "state": { "flags": {}, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 700, "skillPointsSpent": { "wit": 2 } },
+    "expected": { "flags": {}, "reputation": {}, "skills": { "wit": 3, "lore": 2 }, "counters": {}, "inventory": [], "questStages": {}, "xp": 700, "skillPointsSpent": { "wit": 2 } }
+  },
+  {
+    "fn": "recomputeSkills",
+    "description": "invested beyond the ceiling is clamped to maxSkill",
+    "config": { "xpThresholds": [0, 100, 250, 450, 700, 1000], "pointsPerLevel": 1, "startingSkills": { "wit": 1, "lore": 2 }, "maxSkill": 4 },
+    "state": { "flags": {}, "reputation": {}, "skills": {}, "counters": {}, "inventory": [], "questStages": {}, "xp": 1000, "skillPointsSpent": { "wit": 10 } },
+    "expected": { "flags": {}, "reputation": {}, "skills": { "wit": 4, "lore": 2 }, "counters": {}, "inventory": [], "questStages": {}, "xp": 1000, "skillPointsSpent": { "wit": 10 } }
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "portrait.schema.json",
+  "title": "Portrait registry entry",
+  "description": "One static portrait per character, or a shared base reused by many. Expression variants (portrait_{char}_{state}) use this same schema.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/definitions/id",
+      "description": "portrait_{char} for named characters, portrait_{archetype} for shared bases reused across a group."
+    },
+    "name": { "type": "string", "description": "Human-readable label, e.g. \"The Innkeeper\"." },
+    "character": {
+      "$ref": "common.schema.json#/definitions/id",
+      "description": "The character.id this portrait belongs to. Absent for shared base portraits."
+    },
+    "tags": { "$ref": "common.schema.json#/definitions/tags" }
+  },
+  "required": ["id"],
+  "additionalProperties": false
+}

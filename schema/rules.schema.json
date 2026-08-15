@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rules.schema.json",
+  "title": "Project rules",
+  "description": "Project-wide gameplay rules (data/rules.json). Every field is optional; an absent file means all engine defaults.",
+  "type": "object",
+  "properties": {
+    "check": {
+      "type": "object",
+      "description": "Skill-check rules.",
+      "properties": {
+        "dice": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*d([2-9]|[1-9][0-9]+)$",
+          "description": "Default dice for active checks in NdM notation (e.g. 1d20, 2d6, 1d100). A per-check 'dice' field overrides this. Defaults to 1d20."
+        },
+        "criticals": {
+          "type": "boolean",
+          "description": "Critical rolls (snake-eyes / boxcars). When true, every die showing its minimum ALWAYS fails and every die showing its maximum ALWAYS succeeds, regardless of skill or difficulty. Defaults to false \u2014 enabling it changes every check outcome, so it is an explicit per-project opt-in."
+        }
+      },
+      "additionalProperties": false
+    },
+    "quest": {
+      "type": "object",
+      "description": "Quest authoring rules.",
+      "properties": {
+        "tagVocabulary": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Controlled vocabulary for Quest.tags. Journal UIs group and prioritise quests from these, so a typo'd tag silently drops out of the grouping — declaring the vocabulary here turns that into an OBJ warning. Omit the field and any tag is accepted."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "variable.schema.json",
+  "title": "Variable registry entry",
+  "description": "Central registry of every flag/counter/text id used anywhere. The validator checks all references against this. Items are NOT variables — they have their own registry (item.schema.json, data/items.json) so they can carry a player-facing name and description.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/definitions/id"
+    },
+    "name": {
+      "type": "string",
+      "description": "Player-facing display name, e.g. \"Rusted Key\" for an item. Optional: `description` stays the authoring-facing note. Tools fall back to `description`, then the raw id."
+    },
+    "kind": {
+      "enum": [
+        "flag",
+        "counter",
+        "text"
+      ],
+      "description": "'text' is a string-substitution slot, not a gate — text variables are never readable by a Condition. They are written by set_text and interpolated into player-facing strings as {var_id}."
+    },
+    "description": {
+      "type": "string"
+    },
+    "default": {
+      "description": "boolean for flag, integer for counter, string for text. A text variable with no default renders its raw {placeholder} until a set_text runs."
+    },
+    "writtenBy": {
+      "enum": [
+        "data",
+        "engine"
+      ],
+      "description": "Who writes this variable. 'data' (the default) means an authored effect writes it, and the hygiene passes expect to find one. 'engine' means the host writes it at runtime — free-text the player typed, or state the game computes — so 'never written' and 'read but never set' are expected and suppressed. Parlance has no input-capture concept; this is how data declares that boundary instead of faking a literal set_text."
+    },
+    "tags": {
+      "$ref": "common.schema.json#/definitions/tags"
+    }
+  },
+  "required": [
+    "id",
+    "kind",
+    "description"
+  ],
+  "additionalProperties": false
+}

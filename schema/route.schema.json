@@ -1,0 +1,207 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "route.schema.json",
+  "title": "Route (automated playtest script)",
+  "description": "A scripted walkthrough of a dialogue path, used for regression testing. Steps are executed in order via the playSession engine; assertions are checked against the final game state.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/definitions/id"
+    },
+    "description": {
+      "type": "string"
+    },
+    "dialogueId": {
+      "$ref": "common.schema.json#/definitions/id",
+      "description": "Entry dialogue for the route."
+    },
+    "seed": {
+      "type": "integer",
+      "description": "RNG seed for the play session. Defaults to 0."
+    },
+    "startSnapshot": {
+      "$ref": "common.schema.json#/definitions/id",
+      "description": "Id of a snapshot to start from. Its state is the base; startState (if also present) overlays it per top-level field."
+    },
+    "startState": {
+      "type": "object",
+      "description": "Partial game state to start from. Omitted fields default to zero/empty.",
+      "properties": {
+        "flags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "reputation": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "skills": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "counters": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "inventory": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "questStages": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "xp": {
+          "type": "integer"
+        },
+        "skillPointsSpent": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "questFired": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "relationships": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "characterId → starting standing. Absent characters start at 0."
+        }
+      },
+      "additionalProperties": false
+    },
+    "steps": {
+      "type": "array",
+      "description": "Ordered steps: choices to make, a cutscene to consume between scenes, or a choiceless 'advance' run.",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "Make a choice at the current node.",
+            "properties": {
+              "choiceId": {
+                "$ref": "common.schema.json#/definitions/id",
+                "description": "ID of the choice to select at the current node."
+              },
+              "forced": {
+                "type": "string",
+                "enum": [
+                  "pass",
+                  "fail"
+                ],
+                "description": "Force an active check to pass or fail instead of rolling."
+              },
+              "continuation": {
+                "$ref": "common.schema.json#/definitions/id",
+                "description": "If set, the runner calls nextContinuations after the current dialogue ends and picks the continuation matching this dialogueId before making this choice."
+              }
+            },
+            "required": [
+              "choiceId"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "description": "Consume the pending cutscene between scenes: apply effectsOnComplete, clear pendingCutscene, enter entersDialogue if present.",
+            "properties": {
+              "cutscene": {
+                "$ref": "common.schema.json#/definitions/id",
+                "description": "The cutscene id, which must match state.pendingCutscene."
+              }
+            },
+            "required": [
+              "cutscene"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "description": "Walk N consecutive next-advances (choiceless, N2) from the current node — collapses a long ambient/narration run into one step instead of one synthetic-choice step per beat. Fails if the current node has no 'next' at any hop.",
+            "properties": {
+              "advance": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Number of consecutive advance() calls this step performs. Typically 1."
+              }
+            },
+            "required": [
+              "advance"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "assertEnd": {
+      "type": "object",
+      "description": "Assertions checked against the final game state after all steps complete.",
+      "properties": {
+        "flags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "description": "Each key must equal the specified boolean in the final state."
+        },
+        "questStages": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Each quest must be at the specified stage in the final state."
+        },
+        "forbiddenFlags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "These flags must NOT be set (truthy) in the final state."
+        },
+        "endingAvailable": {
+          "$ref": "common.schema.json#/definitions/id",
+          "description": "This ending's unlockedBy condition must evaluate true against the final state."
+        },
+        "pendingCutscene": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Cutscene id expected in state.pendingCutscene at route end. Use null to assert none pending."
+        },
+        "relationships": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "description": "characterId → exact expected standing at route end. An unadjusted character is 0."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "id",
+    "dialogueId",
+    "steps"
+  ],
+  "additionalProperties": false
+}

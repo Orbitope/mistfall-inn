@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "dialogue.schema.json",
+  "title": "Dialogue graph",
+  "description": "A conversation as a graph of nodes. Each node shows text and offers choices. Choices may be gated by conditions, wrapped in skill checks, and may apply effects and route to other nodes.",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/definitions/id" },
+    "title": { "type": "string" },
+    "speakerId": {
+      "$ref": "common.schema.json#/definitions/id",
+      "description": "default character speaking in this dialogue"
+    },
+    "replayable": {
+      "type": "boolean",
+      "description": "true if the player can re-enter this dialogue after first completion; once-only choices (showIf flag gates) will simply not appear"
+    },
+    "availableWhen": {
+      "$ref": "common.schema.json#/definitions/condition",
+      "description": "optional pull-based gate; prefer set_active_dialogue effects for scene switches — use this only for corner-case overrides"
+    },
+    "entry": {
+      "$ref": "common.schema.json#/definitions/id",
+      "description": "id of the node where this dialogue begins"
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "$ref": "common.schema.json#/definitions/id" },
+          "speakerId": {
+            "$ref": "common.schema.json#/definitions/id",
+            "description": "overrides the dialogue's default speaker for this line — a character or skill id; omit for narration"
+          },
+          "text": { "type": "string" },
+          "onEnter": {
+            "type": "array",
+            "items": { "$ref": "common.schema.json#/definitions/effect" },
+            "description": "effects applied when this node is reached"
+          },
+          "isEnd": { "type": "boolean", "description": "true if this node ends the conversation" },
+          "next": {
+            "$ref": "common.schema.json#/definitions/id",
+            "description": "choiceless advance to another node id in this same dialogue, for listen-only beats. Mutually exclusive with a non-empty 'choices' and with isEnd — enforced by the validator (FLOW), not expressible here since additionalProperties:false plus all-optional fields makes a schema-level oneOf reject valid nodes."
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "$ref": "common.schema.json#/definitions/id" },
+                "text": { "type": "string" },
+                "showIf": {
+                  "$ref": "common.schema.json#/definitions/condition",
+                  "description": "choice is hidden unless this condition passes"
+                },
+                "check": { "$ref": "common.schema.json#/definitions/check" },
+                "effects": {
+                  "type": "array",
+                  "items": { "$ref": "common.schema.json#/definitions/effect" }
+                },
+                "goto": {
+                  "$ref": "common.schema.json#/definitions/id",
+                  "description": "next node id (omit if check provides onSuccess/onFailure, or if choice ends convo)"
+                }
+              },
+              "required": ["id", "text"],
+              "additionalProperties": false
+            }
+          },
+          "portrait": {
+            "$ref": "common.schema.json#/definitions/id",
+            "description": "Portrait registry id for this node only, overriding the speaking character's default portrait — for projects that author per-line expressions. Omit to use the character's own portrait."
+          },
+          "notes": {
+            "type": "string",
+            "description": "Author-only annotation. Never shown to the player; ignored by the runtime."
+          }
+        },
+        "required": ["id", "text"],
+        "additionalProperties": false
+      }
+    },
+    "loreRef": { "$ref": "common.schema.json#/definitions/loreRef" },
+    "tags": { "$ref": "common.schema.json#/definitions/tags" }
+  },
+  "required": ["id", "entry", "nodes"],
+  "additionalProperties": false
+}

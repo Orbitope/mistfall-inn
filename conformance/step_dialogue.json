@@ -1,0 +1,642 @@
+[
+  {
+    "fn": "stepDialogue",
+    "description": "base state (wit=0, has_key absent): showIf-gated choices hidden",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Start.",
+          "onEnter": [
+            {
+              "type": "set_flag",
+              "flag": "visited_start",
+              "value": true
+            }
+          ],
+          "choices": [
+            {
+              "id": "ch_goto",
+              "text": "Proceed.",
+              "goto": "node_end"
+            },
+            {
+              "id": "ch_skill_req",
+              "text": "Need wit≥5.",
+              "goto": "node_end",
+              "showIf": {
+                "type": "skill",
+                "skill": "wit",
+                "op": ">=",
+                "value": 5
+              }
+            },
+            {
+              "id": "ch_flag_req",
+              "text": "Need key.",
+              "goto": "node_end",
+              "showIf": {
+                "type": "flag",
+                "flag": "has_key",
+                "value": true
+              }
+            },
+            {
+              "id": "ch_check",
+              "text": "Roll.",
+              "check": {
+                "mode": "active",
+                "skill": "wit",
+                "difficulty": 10,
+                "onSuccess": "node_win",
+                "onFailure": "node_lose"
+              }
+            },
+            {
+              "id": "ch_passive",
+              "text": "Passive.",
+              "goto": "node_win",
+              "check": {
+                "mode": "passive",
+                "skill": "wit",
+                "difficulty": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "node_end",
+          "isEnd": true,
+          "text": "End.",
+          "choices": [
+            {
+              "id": "ch_terminal",
+              "text": "Done."
+            }
+          ]
+        },
+        {
+          "id": "node_win",
+          "isEnd": true,
+          "text": "Won."
+        },
+        {
+          "id": "node_lose",
+          "isEnd": true,
+          "text": "Lost."
+        }
+      ]
+    },
+    "nodeId": "node_start",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "expected": {
+      "visibleChoiceIds": [
+        "ch_goto",
+        "ch_check",
+        "ch_passive"
+      ],
+      "onEnterEffectCount": 1
+    }
+  },
+  {
+    "fn": "stepDialogue",
+    "description": "wit=5 makes ch_skill_req visible",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Start.",
+          "onEnter": [
+            {
+              "type": "set_flag",
+              "flag": "visited_start",
+              "value": true
+            }
+          ],
+          "choices": [
+            {
+              "id": "ch_goto",
+              "text": "Proceed.",
+              "goto": "node_end"
+            },
+            {
+              "id": "ch_skill_req",
+              "text": "Need wit≥5.",
+              "goto": "node_end",
+              "showIf": {
+                "type": "skill",
+                "skill": "wit",
+                "op": ">=",
+                "value": 5
+              }
+            },
+            {
+              "id": "ch_flag_req",
+              "text": "Need key.",
+              "goto": "node_end",
+              "showIf": {
+                "type": "flag",
+                "flag": "has_key",
+                "value": true
+              }
+            },
+            {
+              "id": "ch_check",
+              "text": "Roll.",
+              "check": {
+                "mode": "active",
+                "skill": "wit",
+                "difficulty": 10,
+                "onSuccess": "node_win",
+                "onFailure": "node_lose"
+              }
+            },
+            {
+              "id": "ch_passive",
+              "text": "Passive.",
+              "goto": "node_win",
+              "check": {
+                "mode": "passive",
+                "skill": "wit",
+                "difficulty": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "node_end",
+          "isEnd": true,
+          "text": "End.",
+          "choices": [
+            {
+              "id": "ch_terminal",
+              "text": "Done."
+            }
+          ]
+        },
+        {
+          "id": "node_win",
+          "isEnd": true,
+          "text": "Won."
+        },
+        {
+          "id": "node_lose",
+          "isEnd": true,
+          "text": "Lost."
+        }
+      ]
+    },
+    "nodeId": "node_start",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 5
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "expected": {
+      "visibleChoiceIds": [
+        "ch_goto",
+        "ch_skill_req",
+        "ch_check",
+        "ch_passive"
+      ],
+      "onEnterEffectCount": 1
+    }
+  },
+  {
+    "fn": "stepDialogue",
+    "description": "has_key=true makes ch_flag_req visible",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Start.",
+          "onEnter": [
+            {
+              "type": "set_flag",
+              "flag": "visited_start",
+              "value": true
+            }
+          ],
+          "choices": [
+            {
+              "id": "ch_goto",
+              "text": "Proceed.",
+              "goto": "node_end"
+            },
+            {
+              "id": "ch_skill_req",
+              "text": "Need wit≥5.",
+              "goto": "node_end",
+              "showIf": {
+                "type": "skill",
+                "skill": "wit",
+                "op": ">=",
+                "value": 5
+              }
+            },
+            {
+              "id": "ch_flag_req",
+              "text": "Need key.",
+              "goto": "node_end",
+              "showIf": {
+                "type": "flag",
+                "flag": "has_key",
+                "value": true
+              }
+            },
+            {
+              "id": "ch_check",
+              "text": "Roll.",
+              "check": {
+                "mode": "active",
+                "skill": "wit",
+                "difficulty": 10,
+                "onSuccess": "node_win",
+                "onFailure": "node_lose"
+              }
+            },
+            {
+              "id": "ch_passive",
+              "text": "Passive.",
+              "goto": "node_win",
+              "check": {
+                "mode": "passive",
+                "skill": "wit",
+                "difficulty": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "node_end",
+          "isEnd": true,
+          "text": "End.",
+          "choices": [
+            {
+              "id": "ch_terminal",
+              "text": "Done."
+            }
+          ]
+        },
+        {
+          "id": "node_win",
+          "isEnd": true,
+          "text": "Won."
+        },
+        {
+          "id": "node_lose",
+          "isEnd": true,
+          "text": "Lost."
+        }
+      ]
+    },
+    "nodeId": "node_start",
+    "state": {
+      "flags": {
+        "has_key": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "expected": {
+      "visibleChoiceIds": [
+        "ch_goto",
+        "ch_flag_req",
+        "ch_check",
+        "ch_passive"
+      ],
+      "onEnterEffectCount": 1
+    }
+  },
+  {
+    "fn": "stepDialogue",
+    "description": "all conditions met: all choices visible",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Start.",
+          "onEnter": [
+            {
+              "type": "set_flag",
+              "flag": "visited_start",
+              "value": true
+            }
+          ],
+          "choices": [
+            {
+              "id": "ch_goto",
+              "text": "Proceed.",
+              "goto": "node_end"
+            },
+            {
+              "id": "ch_skill_req",
+              "text": "Need wit≥5.",
+              "goto": "node_end",
+              "showIf": {
+                "type": "skill",
+                "skill": "wit",
+                "op": ">=",
+                "value": 5
+              }
+            },
+            {
+              "id": "ch_flag_req",
+              "text": "Need key.",
+              "goto": "node_end",
+              "showIf": {
+                "type": "flag",
+                "flag": "has_key",
+                "value": true
+              }
+            },
+            {
+              "id": "ch_check",
+              "text": "Roll.",
+              "check": {
+                "mode": "active",
+                "skill": "wit",
+                "difficulty": 10,
+                "onSuccess": "node_win",
+                "onFailure": "node_lose"
+              }
+            },
+            {
+              "id": "ch_passive",
+              "text": "Passive.",
+              "goto": "node_win",
+              "check": {
+                "mode": "passive",
+                "skill": "wit",
+                "difficulty": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "node_end",
+          "isEnd": true,
+          "text": "End.",
+          "choices": [
+            {
+              "id": "ch_terminal",
+              "text": "Done."
+            }
+          ]
+        },
+        {
+          "id": "node_win",
+          "isEnd": true,
+          "text": "Won."
+        },
+        {
+          "id": "node_lose",
+          "isEnd": true,
+          "text": "Lost."
+        }
+      ]
+    },
+    "nodeId": "node_start",
+    "state": {
+      "flags": {
+        "has_key": true
+      },
+      "reputation": {},
+      "skills": {
+        "wit": 5
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "expected": {
+      "visibleChoiceIds": [
+        "ch_goto",
+        "ch_skill_req",
+        "ch_flag_req",
+        "ch_check",
+        "ch_passive"
+      ],
+      "onEnterEffectCount": 1
+    }
+  },
+  {
+    "fn": "stepDialogue",
+    "description": "isEnd node: terminal choice visible, no onEnter effects",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Start.",
+          "choices": [
+            {
+              "id": "ch_goto",
+              "text": "Proceed.",
+              "goto": "node_end"
+            }
+          ]
+        },
+        {
+          "id": "node_end",
+          "isEnd": true,
+          "text": "End.",
+          "choices": [
+            {
+              "id": "ch_terminal",
+              "text": "Done."
+            }
+          ]
+        }
+      ]
+    },
+    "nodeId": "node_end",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "expected": {
+      "visibleChoiceIds": [
+        "ch_terminal"
+      ],
+      "onEnterEffectCount": 0
+    }
+  },
+  {
+    "fn": "stepDialogue",
+    "description": "all showIf conditions fail: no visible choices",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_start",
+      "nodes": [
+        {
+          "id": "node_start",
+          "text": "Blocked.",
+          "choices": [
+            {
+              "id": "ch_need_flag",
+              "text": "Hidden A.",
+              "goto": "node_end",
+              "showIf": {
+                "type": "flag",
+                "flag": "unlocked",
+                "value": true
+              }
+            },
+            {
+              "id": "ch_need_skill",
+              "text": "Hidden B.",
+              "goto": "node_end",
+              "showIf": {
+                "type": "skill",
+                "skill": "wit",
+                "op": ">=",
+                "value": 10
+              }
+            }
+          ]
+        },
+        {
+          "id": "node_end",
+          "isEnd": true,
+          "text": "End."
+        }
+      ]
+    },
+    "nodeId": "node_start",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 5
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "expected": {
+      "visibleChoiceIds": [],
+      "onEnterEffectCount": 0
+    }
+  },
+  {
+    "fn": "stepDialogue",
+    "description": "node with no choices field: visibleChoices is empty",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_only",
+      "nodes": [
+        {
+          "id": "node_only",
+          "isEnd": true,
+          "text": "Narration only."
+        }
+      ]
+    },
+    "nodeId": "node_only",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "expected": {
+      "visibleChoiceIds": [],
+      "onEnterEffectCount": 0
+    }
+  },
+  {
+    "fn": "stepDialogue",
+    "description": "onEnter effects returned but NOT applied to state (caller responsibility)",
+    "dialogue": {
+      "id": "dlg_conformance",
+      "entry": "node_enter",
+      "nodes": [
+        {
+          "id": "node_enter",
+          "text": "Enter.",
+          "onEnter": [
+            {
+              "type": "set_flag",
+              "flag": "arrived",
+              "value": true
+            },
+            {
+              "type": "adjust_counter",
+              "counter": "steps",
+              "delta": 1
+            }
+          ],
+          "choices": [
+            {
+              "id": "ch_go",
+              "text": "Go.",
+              "goto": "node_enter"
+            }
+          ]
+        }
+      ]
+    },
+    "nodeId": "node_enter",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "expected": {
+      "visibleChoiceIds": [
+        "ch_go"
+      ],
+      "onEnterEffectCount": 2
+    }
+  }
+]

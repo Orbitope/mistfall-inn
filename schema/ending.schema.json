@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "ending.schema.json",
+  "title": "Ending",
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/definitions/id"
+    },
+    "name": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "success",
+        "failure",
+        "neutral"
+      ],
+      "description": "Tone of this ending, the same vocabulary quest outcomes use. Optional: projects whose endings do not sort into success/failure may omit it."
+    },
+    "unlockedBy": {
+      "$ref": "common.schema.json#/definitions/condition"
+    },
+    "loreRef": {
+      "$ref": "common.schema.json#/definitions/loreRef"
+    },
+    "tags": {
+      "$ref": "common.schema.json#/definitions/tags"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "summary",
+    "unlockedBy"
+  ],
+  "additionalProperties": false
+}

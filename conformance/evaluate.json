@@ -1,0 +1,1927 @@
+[
+  {
+    "fn": "evaluate",
+    "description": "flag: exact true match",
+    "state": {
+      "flags": {
+        "seen": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "flag",
+      "flag": "seen",
+      "value": true
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "flag: exact false match",
+    "state": {
+      "flags": {
+        "seen": false
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "flag",
+      "flag": "seen",
+      "value": false
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "flag: mismatch (state=true, condition=false)",
+    "state": {
+      "flags": {
+        "seen": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "flag",
+      "flag": "seen",
+      "value": false
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "flag: missing key defaults to false, condition expects false → true",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "flag",
+      "flag": "never_set",
+      "value": false
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "flag: missing key defaults to false, condition expects true → false",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "flag",
+      "flag": "never_set",
+      "value": true
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "skill: >= passes (value equals threshold)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 5
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "skill",
+      "skill": "wit",
+      "op": ">=",
+      "value": 5
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "skill: >= fails (value below threshold)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 4
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "skill",
+      "skill": "wit",
+      "op": ">=",
+      "value": 5
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "skill: missing key defaults to 0",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "skill",
+      "skill": "wit",
+      "op": ">=",
+      "value": 1
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "skill: == operator",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 3
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "skill",
+      "skill": "wit",
+      "op": "==",
+      "value": 3
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "skill: > strictly greater than (equal fails)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {
+        "wit": 5
+      },
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "skill",
+      "skill": "wit",
+      "op": ">",
+      "value": 5
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "reputation: <= passes",
+    "state": {
+      "flags": {},
+      "reputation": {
+        "guild": -3
+      },
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "reputation",
+      "faction": "guild",
+      "op": "<=",
+      "value": 0
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "reputation: missing faction defaults to 0",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "reputation",
+      "faction": "guild",
+      "op": "==",
+      "value": 0
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "counter: >= passes",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {
+        "stamina": 10
+      },
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "counter",
+      "counter": "stamina",
+      "op": ">=",
+      "value": 5
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "counter: missing key defaults to 0",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "counter",
+      "counter": "stamina",
+      "op": "==",
+      "value": 0
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "item: has=true, item present → true",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [
+        "key_card"
+      ],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "item",
+      "item": "key_card",
+      "has": true
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "item: has=true, item absent → false",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "item",
+      "item": "key_card",
+      "has": true
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "item: has=false, item absent → true",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "item",
+      "item": "key_card",
+      "has": false
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "all: both true → true",
+    "state": {
+      "flags": {
+        "a": true,
+        "b": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "all",
+      "of": [
+        {
+          "type": "flag",
+          "flag": "a",
+          "value": true
+        },
+        {
+          "type": "flag",
+          "flag": "b",
+          "value": true
+        }
+      ]
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "all: first false short-circuits (second not evaluated, would pass)",
+    "state": {
+      "flags": {
+        "a": false,
+        "b": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "all",
+      "of": [
+        {
+          "type": "flag",
+          "flag": "a",
+          "value": true
+        },
+        {
+          "type": "flag",
+          "flag": "b",
+          "value": true
+        }
+      ]
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "any: first true short-circuits → true",
+    "state": {
+      "flags": {
+        "a": true,
+        "b": false
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "any",
+      "of": [
+        {
+          "type": "flag",
+          "flag": "a",
+          "value": true
+        },
+        {
+          "type": "flag",
+          "flag": "b",
+          "value": true
+        }
+      ]
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "any: all false → false",
+    "state": {
+      "flags": {
+        "a": false,
+        "b": false
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "any",
+      "of": [
+        {
+          "type": "flag",
+          "flag": "a",
+          "value": true
+        },
+        {
+          "type": "flag",
+          "flag": "b",
+          "value": true
+        }
+      ]
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "not: inverts true → false",
+    "state": {
+      "flags": {
+        "seen": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "not",
+      "of": {
+        "type": "flag",
+        "flag": "seen",
+        "value": true
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "not: inverts false → true",
+    "state": {
+      "flags": {
+        "seen": false
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "not",
+      "of": {
+        "type": "flag",
+        "flag": "seen",
+        "value": true
+      }
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest ==: current stage matches the named stage",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "task_intro": "stg_middle"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": "==",
+      "stage": "stg_middle"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest ==: a different stage does not match",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "task_intro": "stg_start"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": "==",
+      "stage": "stg_middle"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest >=: at the named stage passes",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "task_intro": "stg_middle"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": ">=",
+      "stage": "stg_middle"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest >=: past the named stage passes (order, not equality)",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "task_intro": "stg_done"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": ">=",
+      "stage": "stg_middle"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest >=: before the named stage fails",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "task_intro": "stg_start"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": ">=",
+      "stage": "stg_middle"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest >: strictly past the named stage",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "task_intro": "stg_done"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": ">",
+      "stage": "stg_middle"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest >: at the named stage is not past it",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "task_intro": "stg_middle"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": ">",
+      "stage": "stg_middle"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest <: before the named stage passes",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "task_intro": "stg_start"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": "<",
+      "stage": "stg_middle"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest <=: at the named stage passes",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "task_intro": "stg_middle"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": "<=",
+      "stage": "stg_middle"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest: unstarted is before every stage, so < passes",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": "<",
+      "stage": "stg_start"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest: unstarted is before every stage, so <= passes",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": "<=",
+      "stage": "stg_start"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest: unstarted fails >= (this is 'has not started yet')",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": ">=",
+      "stage": "stg_start"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest: unstarted fails >",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": ">",
+      "stage": "stg_start"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest: unstarted fails == against the first stage",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": "==",
+      "stage": "stg_start"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest: a stage id the quest no longer defines degrades to unstarted",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "task_intro": "stg_deleted"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": "<",
+      "stage": "stg_middle"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest: a stage id the quest no longer defines fails >=",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "task_intro": "stg_deleted"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": ">=",
+      "stage": "stg_middle"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest: an unknown quest is false for every op",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "task_intro": "stg_middle"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_missing",
+      "op": "<",
+      "stage": "stg_middle"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "quest: an unknown target stage is false for every op",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {
+        "task_intro": "stg_middle"
+      },
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "quest",
+      "quest": "task_intro",
+      "op": "<",
+      "stage": "stg_missing"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            },
+            {
+              "id": "stg_middle",
+              "order": 2,
+              "description": "d"
+            },
+            {
+              "id": "stg_done",
+              "order": 3,
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "relationship >=: meets the threshold",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "relationships": {
+        "npc_a": 3
+      }
+    },
+    "condition": {
+      "type": "relationship",
+      "character": "npc_a",
+      "op": ">=",
+      "value": 3
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "relationship >=: below the threshold",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "relationships": {
+        "npc_a": 2
+      }
+    },
+    "condition": {
+      "type": "relationship",
+      "character": "npc_a",
+      "op": ">=",
+      "value": 3
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "relationship: an absent character reads as 0",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "relationship",
+      "character": "npc_a",
+      "op": "==",
+      "value": 0
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "relationship: negative standing compares normally",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {},
+      "relationships": {
+        "npc_a": -4
+      }
+    },
+    "condition": {
+      "type": "relationship",
+      "character": "npc_a",
+      "op": "<",
+      "value": 0
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "questOutcome: true when the outcome's reachedWhen holds",
+    "state": {
+      "flags": {
+        "did_it": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "questOutcome",
+      "quest": "task_intro",
+      "outcome": "out_done"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            }
+          ],
+          "outcomes": [
+            {
+              "id": "out_done",
+              "kind": "success",
+              "description": "d",
+              "reachedWhen": {
+                "type": "flag",
+                "flag": "did_it",
+                "value": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "questOutcome: false when the outcome's reachedWhen does not hold",
+    "state": {
+      "flags": {
+        "did_it": false
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "questOutcome",
+      "quest": "task_intro",
+      "outcome": "out_done"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            }
+          ],
+          "outcomes": [
+            {
+              "id": "out_done",
+              "kind": "success",
+              "description": "d",
+              "reachedWhen": {
+                "type": "flag",
+                "flag": "did_it",
+                "value": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "questOutcome: an effect-free outcome still resolves (questFired would never record it)",
+    "state": {
+      "flags": {
+        "branched": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "questOutcome",
+      "quest": "task_intro",
+      "outcome": "out_noeffect"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            }
+          ],
+          "outcomes": [
+            {
+              "id": "out_noeffect",
+              "kind": "success",
+              "description": "d",
+              "reachedWhen": {
+                "type": "flag",
+                "flag": "branched",
+                "value": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expected": true
+  },
+  {
+    "fn": "evaluate",
+    "description": "questOutcome: an outcome with no reachedWhen is never reached",
+    "state": {
+      "flags": {
+        "did_it": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "questOutcome",
+      "quest": "task_intro",
+      "outcome": "out_bare"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            }
+          ],
+          "outcomes": [
+            {
+              "id": "out_bare",
+              "kind": "neutral",
+              "description": "d"
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "questOutcome: unknown quest is false, not an error",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "questOutcome",
+      "quest": "task_ghost",
+      "outcome": "out_done"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            }
+          ],
+          "outcomes": [
+            {
+              "id": "out_done",
+              "kind": "success",
+              "description": "d",
+              "reachedWhen": {
+                "type": "flag",
+                "flag": "did_it",
+                "value": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "questOutcome: unknown outcome id is false, not an error",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "questOutcome",
+      "quest": "task_intro",
+      "outcome": "out_ghost"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            }
+          ],
+          "outcomes": [
+            {
+              "id": "out_done",
+              "kind": "success",
+              "description": "d",
+              "reachedWhen": {
+                "type": "flag",
+                "flag": "did_it",
+                "value": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "questOutcome: a reference cycle terminates and is false",
+    "state": {
+      "flags": {},
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "questOutcome",
+      "quest": "task_intro",
+      "outcome": "out_a"
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            }
+          ],
+          "outcomes": [
+            {
+              "id": "out_a",
+              "kind": "neutral",
+              "description": "d",
+              "reachedWhen": {
+                "type": "questOutcome",
+                "quest": "task_intro",
+                "outcome": "out_b"
+              }
+            },
+            {
+              "id": "out_b",
+              "kind": "neutral",
+              "description": "d",
+              "reachedWhen": {
+                "type": "questOutcome",
+                "quest": "task_intro",
+                "outcome": "out_a"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expected": false
+  },
+  {
+    "fn": "evaluate",
+    "description": "questOutcome: two siblings may reference the same outcome (guard backtracks)",
+    "state": {
+      "flags": {
+        "did_it": true
+      },
+      "reputation": {},
+      "skills": {},
+      "counters": {},
+      "inventory": [],
+      "questStages": {},
+      "xp": 0,
+      "skillPointsSpent": {}
+    },
+    "condition": {
+      "type": "all",
+      "of": [
+        {
+          "type": "questOutcome",
+          "quest": "task_intro",
+          "outcome": "out_done"
+        },
+        {
+          "type": "questOutcome",
+          "quest": "task_intro",
+          "outcome": "out_done"
+        }
+      ]
+    },
+    "project": {
+      "quests": {
+        "task_intro": {
+          "id": "task_intro",
+          "name": "Intro",
+          "summary": "s",
+          "stages": [
+            {
+              "id": "stg_start",
+              "order": 1,
+              "description": "d"
+            }
+          ],
+          "outcomes": [
+            {
+              "id": "out_done",
+              "kind": "success",
+              "description": "d",
+              "reachedWhen": {
+                "type": "flag",
+                "flag": "did_it",
+                "value": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expected": true
+  }
+]

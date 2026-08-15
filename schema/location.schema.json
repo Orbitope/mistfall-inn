@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "location.schema.json",
+  "title": "Location",
+  "description": "A place in the game world, and the join point between narrative data and the engine's scenes: gates, spawn points, and interactables.",
+  "type": "object",
+  "properties": {
+    "id":          { "$ref": "common.schema.json#/definitions/id" },
+    "name":        { "type": "string" },
+    "description": { "type": "string" },
+    "zone":        { "type": "string", "description": "Project-defined grouping of locations for the zone map, e.g. zone_docks, zone_uptown." },
+    "scene":       { "type": "string", "description": "Opaque scene key for the engine to resolve (scene name, addressable, resource path). Parlance never resolves it." },
+    "spawns": {
+      "type": "array",
+      "description": "Named spawn points. Each id is expected to have a corresponding marker in the engine's scene; Parlance does not verify that. Mark the arrival point used when nothing named a spawn (new game, dev entry, a cutscene arrival with no door) with \"isDefault\": true.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "$ref": "common.schema.json#/definitions/id" },
+          "isDefault": {
+            "type": "boolean",
+            "description": "This is the location's default arrival point, used when nothing names a specific spawn. At most one per location, and exempt from the unused-spawn check since no exit needs to point at it."
+          }
+        },
+        "required": ["id"],
+        "additionalProperties": false
+      }
+    },
+    "exits": {
+      "type": "array",
+      "description": "Transitions to other locations. Each exit may carry a gate condition and a gate type.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "$ref": "common.schema.json#/definitions/id" },
+          "to": {
+            "type": "object",
+            "description": "Target location and spawn point.",
+            "properties": {
+              "location": { "$ref": "common.schema.json#/definitions/id" },
+              "spawn":    { "$ref": "common.schema.json#/definitions/id" }
+            },
+            "required": ["location", "spawn"],
+            "additionalProperties": false
+          },
+          "gate":           { "$ref": "common.schema.json#/definitions/condition" },
+          "gateType": {
+            "type": "string",
+            "description": "Project-defined presentation kind for this gate, e.g. locked_door, toll_booth, guard_post. Free-form on purpose: the vocabulary is per-project, not a Parlance concept. The engine maps it to whatever art/prefab represents that kind of barrier; Parlance only checks that a gateType is paired with a gate condition."
+          },
+          "denialDialogue": {
+            "$ref": "common.schema.json#/definitions/id",
+            "description": "Dialogue that plays when the player fails the gate condition."
+          }
+        },
+        "required": ["id", "to"],
+        "additionalProperties": false
+      }
+    },
+    "interactables": {
+      "type": "array",
+      "description": "Objects and NPCs the player can interact with at this location.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id":        { "$ref": "common.schema.json#/definitions/id" },
+          "kind":      { "type": "string", "enum": ["npc", "object", "environment"] },
+          "dialogue":  {
+            "$ref": "common.schema.json#/definitions/id",
+            "description": "For object/environment: dialogue to play directly."
+          },
+          "character": {
+            "$ref": "common.schema.json#/definitions/id",
+            "description": "For npc: runtime resolves the character's dialogue ladder (resolveCharacterDialogue)."
+          },
+          "showIf": { "$ref": "common.schema.json#/definitions/condition" },
+          "trigger": {
+            "type": "string",
+            "enum": ["walk_up", "on_enter"],
+            "description": "How the player reaches this. walk_up (default when absent): a thing in space the player approaches. on_enter: plays automatically on entering the location when its showIf passes (arrival scenes, turnbacks). Ambient barks are walk_up — they are embodied by an unnamed extra at a marker, not auto-played."
+          }
+        },
+        "required": ["id", "kind"],
+        "additionalProperties": false
+      }
+    },
+    "loreRef": { "$ref": "common.schema.json#/definitions/loreRef" },
+    "tags":    { "$ref": "common.schema.json#/definitions/tags" }
+  },
+  "required": ["id", "name"],
+  "additionalProperties": false
+}

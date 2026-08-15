@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "character.schema.json",
+  "title": "Character / NPC",
+  "type": "object",
+  "properties": {
+    "id": { "$ref": "common.schema.json#/definitions/id" },
+    "name": { "type": "string" },
+    "archetype": { "type": "string", "description": "Project-defined grouping for this character — role, class, species, rank, whatever axis the project sorts its cast by. Free-form on purpose: the taxonomy is per-project, not a Parlance concept. Drives the editor's group-by-archetype view." },
+    "factionId": { "$ref": "common.schema.json#/definitions/id" },
+    "role": { "type": "string" },
+    "description": { "type": "string" },
+    "dialogueStyle": { "type": "string", "description": "Notes on how they speak — vocabulary, cadence, tics." },
+    "stats": {
+      "type": "object",
+      "description": "Optional NPC stats keyed by skill id (for opposed checks later).",
+      "additionalProperties": { "type": "integer" }
+    },
+    "dialogues": {
+      "type": "array",
+      "description": "Ordered dialogue ladder (first-match-wins). Resolution walks top-to-bottom and returns the first rung whose showIf passes; an absent showIf always matches (unconditional fallthrough). ARRAY ORDER IS SIGNIFICANT. Replaces the old defaultDialogue field.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "dialogue": {
+            "$ref": "common.schema.json#/definitions/id",
+            "description": "Dialogue id presented when this rung wins."
+          },
+          "showIf": {
+            "$ref": "common.schema.json#/definitions/condition",
+            "description": "Gate for this rung. Omitted = always matches (fallthrough). By convention the last rung omits it."
+          }
+        },
+        "required": ["dialogue"],
+        "additionalProperties": false
+      }
+    },
+    "portrait": {
+      "$ref": "common.schema.json#/definitions/id",
+      "description": "Portrait registry id (data/portraits.json), e.g. portrait_wren."
+    },
+    "loreRef": { "$ref": "common.schema.json#/definitions/loreRef" },
+    "tags": { "$ref": "common.schema.json#/definitions/tags" }
+  },
+  "required": ["id", "name"],
+  "additionalProperties": false
+}
