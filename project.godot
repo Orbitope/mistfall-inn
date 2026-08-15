@@ -9,8 +9,15 @@ run/main_scene=""
 [display]
 window/size/viewport_width=320
 window/size/viewport_height=180
-window/stretch/mode="canvas_items"
+; viewport, not canvas_items. ws05's notes ask for both canvas_items AND
+; "dialogue UI at native resolution", which cannot both be true: canvas_items
+; rasterizes fonts at the WINDOW size, so every pixel-perfect font import
+; setting becomes moot and stems break at non-integer scales. viewport renders
+; the real 320x180 buffer and scales it by whole numbers, which is what makes a
+; pixel font land on the grid.
+window/stretch/mode="viewport"
 window/stretch/aspect="keep"
+window/stretch/scale_mode="integer"
 
 [rendering]
 textures/canvas_textures/default_texture_filter=0
