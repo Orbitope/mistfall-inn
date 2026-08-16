@@ -27,5 +27,8 @@ MIT — the GDScript runtime (`addons/parlance/`), the conformance runner
 CC0 1.0 Universal — the narrative content (`data/`, `lore/`), dedicated to the
 public domain. Fork it, remix it, ship it; no attribution required.
 
-Art and audio are licensed per asset. Every third-party asset is recorded in
-CREDITS.md with its source and licence, from the first one added.
+MIT — the character portraits in `assets/`, which are generated rather than
+third-party and carry no external licence.
+
+If a third-party asset is ever added, it needs its own entry here recording
+source, author, and licence, and CC BY assets need that reproduced in-game.

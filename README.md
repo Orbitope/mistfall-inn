@@ -140,7 +140,6 @@ Mixed, deliberately — see [LICENSE](LICENSE) for the split.
 
 | Part | Licence |
 |---|---|
-| `addons/parlance/`, `tests/`, `scenes/` | MIT |
+| `addons/parlance/`, `tests/`, `scenes/`, `assets/` | MIT |
 | `data/`, `lore/` (the narrative) | CC0 |
 | Vendored `conformance/`, `schema/` | MIT, from the Parlance spec |
-| Art and audio | per-asset; see `CREDITS.md` |
