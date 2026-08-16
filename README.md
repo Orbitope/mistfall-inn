@@ -68,7 +68,8 @@ Drop `dlg_examine_body`'s from 9 to 5 and watch the odds the UI quotes move
 with it — those percentages are computed from the dice distribution, not
 hardcoded.
 
-**Change the pacing.** `loc_common_room.json` has a gate reading
+**Change the pacing.** [`data/locations/loc_common_room.json`](data/locations/loc_common_room.json)
+has a gate reading
 `evidence_count >= 5`. That is what summons the militia and ends the night. Set
 it to 2 for a brutally short inquest, or 7 to force exploring every room. The
 status bar reads the number out of that gate, so the UI follows automatically.

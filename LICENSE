@@ -1,8 +1,10 @@
 This repository is licensed in parts.
 
 MIT — the GDScript runtime (`addons/parlance/`), the conformance runner
-(`tests/`) and demo scene (`scenes/`), and the vendored specification files
-(`conformance/`, `schema/`) which arrive under Parlance's own MIT grant.
+(`tests/`), the game (`scenes/`), the character portraits (`assets/`, generated
+rather than third-party and carrying no external licence), and the vendored
+specification files (`conformance/`, `schema/`) which arrive under Parlance's
+own MIT grant.
 
     Copyright (c) 2026 Matthew Burke
 
@@ -26,9 +28,6 @@ MIT — the GDScript runtime (`addons/parlance/`), the conformance runner
 
 CC0 1.0 Universal — the narrative content (`data/`, `lore/`), dedicated to the
 public domain. Fork it, remix it, ship it; no attribution required.
-
-MIT — the character portraits in `assets/`, which are generated rather than
-third-party and carry no external licence.
 
 If a third-party asset is ever added, it needs its own entry here recording
 source, author, and licence, and CC BY assets need that reproduced in-game.
