@@ -1,0 +1,32 @@
+{
+  "skills": [
+    {
+      "cluster": "mind",
+      "description": "Seeing the one detail that is a degree out of place.",
+      "id": "observation",
+      "name": "Observation",
+      "voice": "Flat, patient, faintly pleased with itself."
+    },
+    {
+      "cluster": "mind",
+      "description": "Pressing a person until the shape of the lie shows.",
+      "id": "rhetoric",
+      "name": "Rhetoric",
+      "voice": "Warm on the surface. Not underneath."
+    },
+    {
+      "cluster": "heart",
+      "description": "Sitting with someone long enough that they fill the silence.",
+      "id": "empathy",
+      "name": "Empathy",
+      "voice": "Quiet. Never in a hurry."
+    },
+    {
+      "cluster": "body",
+      "description": "Holding still when the room would rather you did not.",
+      "id": "nerve",
+      "name": "Nerve",
+      "voice": "Says almost nothing. Does not look away."
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "entry": "node_dark",
+  "id": "dlg_yard_dark",
+  "nodes": [
+    {
+      "id": "node_dark",
+      "isEnd": true,
+      "text": "You get two steps into the yard before the dark and the rain agree that this is pointless. The cart is a shape. The stable is a darker shape. You would need a light, and Bragg has the only one that still works."
+    }
+  ],
+  "tags": [
+    "denial"
+  ],
+  "title": "Too Dark to Search"
+}

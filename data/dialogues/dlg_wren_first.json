@@ -1,0 +1,61 @@
+{
+  "entry": "node_landing",
+  "id": "dlg_wren_first",
+  "nodes": [
+    {
+      "choices": [
+        {
+          "goto": "node_knew",
+          "id": "ch_knew_him",
+          "text": "\"You knew him.\""
+        },
+        {
+          "goto": "node_case",
+          "id": "ch_case",
+          "text": "\"What's in the case?\""
+        }
+      ],
+      "id": "node_landing",
+      "onEnter": [
+        {
+          "flag": "knows_wren_dismissed",
+          "type": "set_flag",
+          "value": true
+        },
+        {
+          "counter": "evidence_count",
+          "delta": 1,
+          "type": "adjust_counter"
+        }
+      ],
+      "text": "He is sitting on the top step with his case across his knees, fully dressed, at four in the morning.\n\n\"I couldn't,\" he says, before you ask. \"Sleep. With him down there. I know how that sounds. I've been sitting here composing how it sounds.\""
+    },
+    {
+      "id": "node_knew",
+      "next": "node_close",
+      "onEnter": [
+        {
+          "character": "npc_wren",
+          "delta": 1,
+          "type": "adjust_relationship"
+        }
+      ],
+      "text": "\"I clerked for him. Four years.\" He says it the way you say a thing you have decided to say first. \"He let me go in the spring. Without a character, which in that office means without a trade. Hence —\" a small motion at the case \"— tinctures.\""
+    },
+    {
+      "id": "node_case",
+      "next": "node_close",
+      "text": "\"Tinctures. Willow, valerian, a little laudanum I'm licensed for.\" He opens it without being asked, which is either candour or rehearsal. \"I clerked for him once. He let me go in the spring, without a character. This is what's left.\""
+    },
+    {
+      "id": "node_close",
+      "isEnd": true,
+      "text": "He closes the case with both hands, carefully, the way you close something you have opened a great many times tonight."
+    }
+  ],
+  "speakerId": "npc_wren",
+  "tags": [
+    "suspect"
+  ],
+  "title": "Wren — The Dismissal"
+}

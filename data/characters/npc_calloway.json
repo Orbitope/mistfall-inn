@@ -1,0 +1,30 @@
+{
+  "archetype": "carter",
+  "description": "Wet to the shoulder and in no mood. Would rather be accused of the wrong crime than searched for the right one.",
+  "dialogueStyle": "Blunt, profane-adjacent, allergic to being handled. Respects a straight question.",
+  "dialogues": [
+    {
+      "dialogue": "dlg_calloway_pressed",
+      "showIf": {
+        "flag": "knows_calloway_cargo",
+        "type": "flag",
+        "value": true
+      }
+    },
+    {
+      "dialogue": "dlg_calloway_first"
+    }
+  ],
+  "factionId": "fac_road",
+  "id": "npc_calloway",
+  "loreRef": {
+    "file": "lore/mistfall.md"
+  },
+  "name": "Maud Calloway",
+  "portrait": "portrait_calloway",
+  "role": "Hauls freight over the Kelder. Was hauling rather more than freight this trip.",
+  "stats": {
+    "nerve": 8,
+    "rhetoric": 5
+  }
+}

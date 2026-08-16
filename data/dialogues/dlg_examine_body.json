@@ -1,0 +1,97 @@
+{
+  "entry": "node_body",
+  "id": "dlg_examine_body",
+  "nodes": [
+    {
+      "choices": [
+        {
+          "check": {
+            "difficulty": 9,
+            "mode": "active",
+            "onFailure": "node_poison",
+            "onSuccess": "node_foxglove",
+            "skill": "observation"
+          },
+          "id": "ch_examine",
+          "showIf": {
+            "flag": "knows_poison",
+            "type": "flag",
+            "value": false
+          },
+          "text": "Go over him properly."
+        },
+        {
+          "goto": "node_recall",
+          "id": "ch_recall",
+          "showIf": {
+            "flag": "knows_poison",
+            "type": "flag",
+            "value": true
+          },
+          "text": "Look again at what you already found."
+        },
+        {
+          "goto": "node_leave",
+          "id": "ch_leave",
+          "text": "Leave him as he is."
+        }
+      ],
+      "id": "node_body",
+      "text": "He has been dead some hours. No wound you can see, no disarray beyond the chair pushed back. His right hand is still curled where the cup would have been."
+    },
+    {
+      "id": "node_foxglove",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "flag": "knows_poison",
+          "type": "set_flag",
+          "value": true
+        },
+        {
+          "flag": "knows_foxglove",
+          "type": "set_flag",
+          "value": true
+        },
+        {
+          "counter": "evidence_count",
+          "delta": 1,
+          "type": "adjust_counter"
+        }
+      ],
+      "speakerId": "observation",
+      "text": "The lips have gone the colour of a bruise, and there is a sediment in the cup's heel — dried, faintly furred. Foxglove. Steeped and strained badly by someone in a hurry. You would know it anywhere; so would anyone who sells tinctures for a living."
+    },
+    {
+      "id": "node_poison",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "flag": "knows_poison",
+          "type": "set_flag",
+          "value": true
+        },
+        {
+          "counter": "evidence_count",
+          "delta": 1,
+          "type": "adjust_counter"
+        }
+      ],
+      "text": "No wound, no bruising at the throat, nothing under the nails. Whatever took him was in him rather than done to him — you are sure of that much and no more. The cup holds a residue you cannot name, and naming it is exactly the thing that would have been useful."
+    },
+    {
+      "id": "node_recall",
+      "isEnd": true,
+      "text": "Nothing has changed. He is still a man who drank something, and still not saying what."
+    },
+    {
+      "id": "node_leave",
+      "isEnd": true,
+      "text": "You leave him the little dignity the angle of the chair allows."
+    }
+  ],
+  "tags": [
+    "object"
+  ],
+  "title": "Halloran Vane"
+}

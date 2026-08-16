@@ -1,0 +1,66 @@
+{
+  "entry": "node_bar",
+  "id": "dlg_bragg_first",
+  "nodes": [
+    {
+      "choices": [
+        {
+          "goto": "node_arrears",
+          "id": "ch_why",
+          "text": "\"Why would you say that first?\""
+        },
+        {
+          "check": {
+            "difficulty": 10,
+            "mode": "active",
+            "onFailure": "node_shut",
+            "onSuccess": "node_arrears",
+            "skill": "rhetoric"
+          },
+          "id": "ch_press",
+          "text": "\"Then you'd better tell me the rest of it.\""
+        }
+      ],
+      "id": "node_bar",
+      "onEnter": [
+        {
+          "flag": "knows_bragg_debt",
+          "type": "set_flag",
+          "value": true
+        },
+        {
+          "counter": "evidence_count",
+          "delta": 1,
+          "type": "adjust_counter"
+        }
+      ],
+      "text": "\"He took the corner table at seven and the wine at nine.\" She is drying a cup that has been dry for some time. \"I poured it. I'll say that before you ask, because you'd have got there.\""
+    },
+    {
+      "id": "node_arrears",
+      "next": "node_lantern",
+      "text": "\"Because the book on that table has nineteen years of my arrears in it, and by Michaelmas this house would have been the Crown's.\" She sets the cup down. \"So I had it worse than anyone here, and I'd rather you heard that from me than worked it out and got pleased with yourself.\""
+    },
+    {
+      "id": "node_shut",
+      "next": "node_lantern",
+      "text": "\"The rest of it.\" She looks at you for slightly too long. \"The rest of it is that he was going to have this house off me by Michaelmas, and every soul under this roof knew it, and you'd have had that out of the book in five minutes anyway.\"\n\nYou have the fact. You have also spent something to get it, and she has taken your measure."
+    },
+    {
+      "id": "node_lantern",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "item": "item_lantern",
+          "type": "give_item"
+        }
+      ],
+      "text": "\"You'll want the yard before the rain has the whole of it.\" She reaches under the bar and puts a stable lantern on the wood between you. \"Bring it back lit.\""
+    }
+  ],
+  "speakerId": "npc_bragg",
+  "tags": [
+    "suspect"
+  ],
+  "title": "Bragg — The Arrears"
+}

@@ -1,0 +1,111 @@
+{
+  "entry": "node_dawn",
+  "id": "dlg_accuse",
+  "nodes": [
+    {
+      "choices": [
+        {
+          "goto": "node_wren_clean",
+          "id": "ch_wren_clean",
+          "showIf": {
+            "flag": "wren_cracked",
+            "type": "flag",
+            "value": true
+          },
+          "text": "\"Aldous Wren. He'll tell you the rest himself.\""
+        },
+        {
+          "goto": "node_wren_cold",
+          "id": "ch_wren_cold",
+          "text": "\"Aldous Wren.\""
+        },
+        {
+          "goto": "node_bragg",
+          "id": "ch_bragg",
+          "text": "\"Sera Bragg. She poured it.\""
+        },
+        {
+          "goto": "node_calloway",
+          "id": "ch_calloway",
+          "showIf": {
+            "has": true,
+            "item": "item_ledger_page",
+            "type": "item"
+          },
+          "text": "\"Maud Calloway. It was her cart.\""
+        },
+        {
+          "goto": "node_none",
+          "id": "ch_none",
+          "text": "\"No one. Not on what I have.\""
+        }
+      ],
+      "id": "node_dawn",
+      "text": "The rain stops the way it started — all at once, as a decision. Grey comes up over the Kelder and with it, along the ford road, four riders of the county militia.\n\nThe sergeant puts his head in at the door, looks at the corner table, and then at you.\n\n\"Well?\" he says. \"Name one.\""
+    },
+    {
+      "id": "node_wren_clean",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "flag": "accused_wren",
+          "type": "set_flag",
+          "value": true
+        }
+      ],
+      "text": "He does. On the step, to a sergeant who did not ask him to, in the same flat voice he used on you — the eleven shillings, the twelfth of the month, the page he could neither burn nor keep.\n\nThey take him down the ford road without irons, because nobody suggests them. At the turn he looks back at the inn, once, and then does not."
+    },
+    {
+      "id": "node_wren_cold",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "flag": "accused_wren",
+          "type": "set_flag",
+          "value": true
+        }
+      ],
+      "text": "The sergeant looks at Wren, and Wren looks at the floor of the common room, and says nothing at all — which the sergeant, who has a long ride and a dry bed at the end of it, takes for the thing it probably is.\n\nThey take him. He does not explain himself to anyone, then or later, and the record of the Mistfall inquest is four lines long."
+    },
+    {
+      "id": "node_bragg",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "flag": "accused_bragg",
+          "type": "set_flag",
+          "value": true
+        }
+      ],
+      "text": "\"I poured it,\" Bragg agrees, when asked, because it is true and because she said it to you first and will not now unsay it.\n\nThat is enough for a sergeant with a long ride. She goes without argument and without looking at anyone, and the Mistfall stands empty on the Kelder road with its door unbarred, which by autumn is the same thing as the Crown having it after all."
+    },
+    {
+      "id": "node_calloway",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "flag": "accused_calloway",
+          "type": "set_flag",
+          "value": true
+        }
+      ],
+      "text": "You give them the page and the cart it came out of, and the page has a name on it that is not hers, and the sergeant reads it twice.\n\nBut it was her cart, and forty pounds of undeclared tin is on the record at the Kelder toll, and the militia has been up since three. They take her. On the ford road she says one thing, to you: \"You had it in your hand.\""
+    },
+    {
+      "id": "node_none",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "flag": "named_no_one",
+          "type": "set_flag",
+          "value": true
+        }
+      ],
+      "text": "\"No one,\" you say. \"Not on what I have.\"\n\nThe sergeant looks at you for a while, and then writes something short, and then they load Halloran Vane onto the cart they brought for exactly that purpose.\n\nBy noon the ford is passable and the Mistfall is empty. The apothecary goes north. The carter goes south with an empty bed and her year in someone's book. Bragg opens at six, as she has for nineteen years, for as long as the arrears allow.\n\nNobody is hanged for it. That is not nothing."
+    }
+  ],
+  "tags": [
+    "ending"
+  ],
+  "title": "First Light"
+}

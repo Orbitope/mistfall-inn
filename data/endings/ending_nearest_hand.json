@@ -1,0 +1,14 @@
+{
+  "id": "ending_nearest_hand",
+  "kind": "failure",
+  "name": "The Nearest Hand",
+  "summary": "The militia takes someone who did not do it, on evidence that looked enough like it at first light. The inquest record is four lines long and none of them are wrong, exactly.",
+  "tags": [
+    "ending"
+  ],
+  "unlockedBy": {
+    "outcome": "out_wrong",
+    "quest": "qst_inquest",
+    "type": "questOutcome"
+  }
+}

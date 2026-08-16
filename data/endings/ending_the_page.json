@@ -1,0 +1,14 @@
+{
+  "id": "ending_the_page",
+  "kind": "success",
+  "name": "The Twelfth of the Month",
+  "summary": "Aldous Wren goes down the ford road for eleven shillings and a page he could neither burn nor keep. The right answer, which is not the same as a good morning.",
+  "tags": [
+    "ending"
+  ],
+  "unlockedBy": {
+    "outcome": "out_right",
+    "quest": "qst_inquest",
+    "type": "questOutcome"
+  }
+}

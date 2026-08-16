@@ -1,0 +1,30 @@
+{
+  "archetype": "innkeeper",
+  "description": "Broad, unhurried, and entirely unsurprised. Has already decided what she is willing to say.",
+  "dialogueStyle": "Short declaratives. Answers the question asked and not the one meant. Wipes something while she talks.",
+  "dialogues": [
+    {
+      "dialogue": "dlg_bragg_pressed",
+      "showIf": {
+        "flag": "knows_bragg_debt",
+        "type": "flag",
+        "value": true
+      }
+    },
+    {
+      "dialogue": "dlg_bragg_first"
+    }
+  ],
+  "factionId": "fac_road",
+  "id": "npc_bragg",
+  "loreRef": {
+    "file": "lore/mistfall.md"
+  },
+  "name": "Sera Bragg",
+  "portrait": "portrait_bragg",
+  "role": "Keeps the Mistfall. Has kept it nineteen years, most of them badly.",
+  "stats": {
+    "empathy": 6,
+    "nerve": 7
+  }
+}

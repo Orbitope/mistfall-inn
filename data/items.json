@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "description": "Bragg's stable lantern. Without it the yard is unsearchable in the dark.",
+      "id": "item_lantern",
+      "name": "Stable Lantern"
+    },
+    {
+      "description": "The page torn from Vane's ledger, found hidden in Calloway's cart.",
+      "id": "item_ledger_page",
+      "name": "Torn Ledger Page"
+    }
+  ]
+}

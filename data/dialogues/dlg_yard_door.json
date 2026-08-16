@@ -1,0 +1,68 @@
+{
+  "entry": "node_door",
+  "id": "dlg_yard_door",
+  "nodes": [
+    {
+      "choices": [
+        {
+          "goto": "node_prints",
+          "id": "ch_look",
+          "showIf": {
+            "flag": "saw_wet_boots",
+            "type": "flag",
+            "value": false
+          },
+          "text": "Crouch and look at the floor."
+        },
+        {
+          "goto": "node_recall",
+          "id": "ch_recall",
+          "showIf": {
+            "flag": "saw_wet_boots",
+            "type": "flag",
+            "value": true
+          },
+          "text": "Look at the prints again."
+        },
+        {
+          "goto": "node_leave",
+          "id": "ch_leave",
+          "text": "Straighten up."
+        }
+      ],
+      "id": "node_door",
+      "text": "The door to the stable yard is shut against the weather, and the boards in front of it are dark with water."
+    },
+    {
+      "id": "node_prints",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "flag": "saw_wet_boots",
+          "type": "set_flag",
+          "value": true
+        },
+        {
+          "counter": "evidence_count",
+          "delta": 1,
+          "type": "adjust_counter"
+        }
+      ],
+      "text": "Not spill. Prints — in, not out, and only the one set, drying at the edges. Someone crossed the yard in the rain tonight and came back through this door, and it was long enough ago that the water has had time to think about leaving."
+    },
+    {
+      "id": "node_recall",
+      "isEnd": true,
+      "text": "One set. Inward. Still the wrong number of people to have been outside tonight."
+    },
+    {
+      "id": "node_leave",
+      "isEnd": true,
+      "text": "You leave the door shut."
+    }
+  ],
+  "tags": [
+    "object"
+  ],
+  "title": "The Yard Door"
+}

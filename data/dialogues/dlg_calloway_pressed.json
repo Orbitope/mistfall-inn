@@ -1,0 +1,47 @@
+{
+  "entry": "node_back",
+  "id": "dlg_calloway_pressed",
+  "nodes": [
+    {
+      "choices": [
+        {
+          "goto": "node_search",
+          "id": "ch_search",
+          "text": "\"I want to search the cart.\""
+        },
+        {
+          "goto": "node_night",
+          "id": "ch_night",
+          "text": "\"Did anyone come out here tonight?\""
+        },
+        {
+          "goto": "node_go",
+          "id": "ch_go",
+          "text": "Leave her to the wheel."
+        }
+      ],
+      "id": "node_back",
+      "text": "\"Back.\" She has got the strap fixed and is now doing something unnecessary to a wheel, in order not to go inside. \"Ask the other thing.\""
+    },
+    {
+      "id": "node_search",
+      "isEnd": true,
+      "text": "\"Course you do.\" She steps back from the cart and makes a flat, disgusted gesture at the whole of it. \"Everyone wants in this cart. He wanted in this cart. Go on, then — there's nothing in it now but sacking and the rest of my year.\""
+    },
+    {
+      "id": "node_night",
+      "isEnd": true,
+      "text": "\"Someone did.\" She says it without any pleasure at all. \"I heard the yard door twice and I didn't get up, because I assumed it was the assessment coming back for the wheels.\" She looks at the house. \"Twice. Out and in.\""
+    },
+    {
+      "id": "node_go",
+      "isEnd": true,
+      "text": "She goes back to the wheel that does not need her."
+    }
+  ],
+  "speakerId": "npc_calloway",
+  "tags": [
+    "suspect"
+  ],
+  "title": "Calloway — The Cart"
+}

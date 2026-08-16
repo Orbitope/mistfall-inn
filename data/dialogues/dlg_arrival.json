@@ -1,0 +1,72 @@
+{
+  "entry": "node_open",
+  "id": "dlg_arrival",
+  "nodes": [
+    {
+      "id": "node_open",
+      "next": "node_asks",
+      "text": "The Kelder bridge went out at midnight and took the road with it. Five of you sat out the rest of the storm in the Mistfall's common room. Now it is four in the morning, the fire is down to a red seam, and Halloran Vane of the Crown Assessment is face-down at the corner table with his wine gone cold beside him.\n\nThe innkeeper is standing very still behind the bar, looking at you rather than at him."
+    },
+    {
+      "choices": [
+        {
+          "effects": [
+            {
+              "type": "set_text",
+              "value": "the clerk",
+              "variable": "investigator_name"
+            }
+          ],
+          "goto": "node_terms",
+          "id": "ch_name_clerk",
+          "text": "\"Clerk. That'll do.\""
+        },
+        {
+          "effects": [
+            {
+              "type": "set_text",
+              "value": "Roque",
+              "variable": "investigator_name"
+            }
+          ],
+          "goto": "node_terms",
+          "id": "ch_name_full",
+          "text": "\"Ansel Roque. Third circuit.\""
+        },
+        {
+          "effects": [
+            {
+              "type": "set_text",
+              "value": "you",
+              "variable": "investigator_name"
+            }
+          ],
+          "goto": "node_terms",
+          "id": "ch_name_none",
+          "text": "Say nothing, and look at the body instead."
+        }
+      ],
+      "id": "node_asks",
+      "speakerId": "npc_bragg",
+      "text": "\"You ride for the magistrate. That makes you the nearest thing to law between here and Kelder.\" She sets down the cloth. \"Road opens at first light and the militia comes up with it. Whoever you give them, they'll take. So — what do I call you?\""
+    },
+    {
+      "id": "node_terms",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "flag": "heard_the_room",
+          "type": "set_flag",
+          "value": true
+        }
+      ],
+      "speakerId": "npc_bragg",
+      "text": "\"Right.\" A short nod, as though something had been agreed. \"Then I'll tell you what I told myself when I found him, {investigator_name}. Nobody left this house tonight. The water's over the ford both ways.\"\n\nWhich means it was one of the four of you still breathing."
+    }
+  ],
+  "tags": [
+    "scene",
+    "opening"
+  ],
+  "title": "The Room at Four in the Morning"
+}

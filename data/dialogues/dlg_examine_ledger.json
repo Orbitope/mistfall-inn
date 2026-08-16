@@ -1,0 +1,68 @@
+{
+  "entry": "node_ledger",
+  "id": "dlg_examine_ledger",
+  "nodes": [
+    {
+      "choices": [
+        {
+          "goto": "node_torn",
+          "id": "ch_read",
+          "showIf": {
+            "flag": "saw_torn_ledger",
+            "type": "flag",
+            "value": false
+          },
+          "text": "Read back through the last few days."
+        },
+        {
+          "goto": "node_recall",
+          "id": "ch_recall",
+          "showIf": {
+            "flag": "saw_torn_ledger",
+            "type": "flag",
+            "value": true
+          },
+          "text": "Check the stub again."
+        },
+        {
+          "goto": "node_leave",
+          "id": "ch_leave",
+          "text": "Close it."
+        }
+      ],
+      "id": "node_ledger",
+      "text": "Vane's ledger lies open at the table's far edge, out of the wine's reach. Columns of holdings, valuations, arrears. A working man's book, kept beautifully."
+    },
+    {
+      "id": "node_torn",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "flag": "saw_torn_ledger",
+          "type": "set_flag",
+          "value": true
+        },
+        {
+          "counter": "evidence_count",
+          "delta": 1,
+          "type": "adjust_counter"
+        }
+      ],
+      "text": "Kelder toll, a seizure of undeclared goods. The Mistfall, nineteen years of arrears totalled in a hand that did not hesitate. Then — between the eleventh and the thirteenth — a stub. A page has been torn out close to the binding, recently and not carefully."
+    },
+    {
+      "id": "node_recall",
+      "isEnd": true,
+      "text": "The stub is where it was. Whatever the twelfth held, it is not in this room."
+    },
+    {
+      "id": "node_leave",
+      "isEnd": true,
+      "text": "You close the book on the dead man's handwriting."
+    }
+  ],
+  "tags": [
+    "object"
+  ],
+  "title": "The Assessment Ledger"
+}

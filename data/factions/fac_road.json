@@ -1,0 +1,12 @@
+{
+  "id": "fac_road",
+  "name": "Road People",
+  "opposes": [
+    "fac_crown"
+  ],
+  "reputationRange": {
+    "max": 10,
+    "min": -10
+  },
+  "summary": "Carters, pedlars, innkeepers. Everyone whose living the assessment is currently pricing."
+}

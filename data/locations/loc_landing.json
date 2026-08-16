@@ -1,0 +1,27 @@
+{
+  "description": "Three guest doors, two of them shut, and a man sitting on the top step with his case.",
+  "exits": [
+    {
+      "id": "ex_down",
+      "to": {
+        "location": "loc_common_room",
+        "spawn": "sp_stairs_foot"
+      }
+    }
+  ],
+  "id": "loc_landing",
+  "interactables": [
+    {
+      "character": "npc_wren",
+      "id": "int_wren",
+      "kind": "npc"
+    }
+  ],
+  "name": "The Upstairs Landing",
+  "spawns": [
+    {
+      "id": "sp_stairs_top"
+    }
+  ],
+  "zone": "zone_inn"
+}

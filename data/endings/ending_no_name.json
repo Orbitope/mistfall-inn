@@ -1,0 +1,14 @@
+{
+  "id": "ending_no_name",
+  "kind": "neutral",
+  "name": "No Name Given",
+  "summary": "The ford opens, the house empties, and nobody hangs for Halloran Vane. Whether that is mercy or failure is left, deliberately, to you.",
+  "tags": [
+    "ending"
+  ],
+  "unlockedBy": {
+    "outcome": "out_silent",
+    "quest": "qst_inquest",
+    "type": "questOutcome"
+  }
+}

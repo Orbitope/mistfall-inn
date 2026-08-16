@@ -1,0 +1,94 @@
+{
+  "variables": [
+    {
+      "default": false,
+      "description": "The opening scene has played — set once, so it does not replay on re-entry.",
+      "id": "heard_the_room",
+      "kind": "flag"
+    },
+    {
+      "default": false,
+      "description": "Established that Vane was poisoned rather than struck.",
+      "id": "knows_poison",
+      "kind": "flag"
+    },
+    {
+      "default": false,
+      "description": "Identified the poison specifically as foxglove — the detail only a careful examination yields.",
+      "id": "knows_foxglove",
+      "kind": "flag"
+    },
+    {
+      "default": false,
+      "description": "Noticed that a page has been torn out of Vane's assessment ledger.",
+      "id": "saw_torn_ledger",
+      "kind": "flag"
+    },
+    {
+      "default": false,
+      "description": "Noticed the wet bootprints leading from the yard door.",
+      "id": "saw_wet_boots",
+      "kind": "flag"
+    },
+    {
+      "default": false,
+      "description": "Learned that Vane's assessment would have taken the inn for arrears.",
+      "id": "knows_bragg_debt",
+      "kind": "flag"
+    },
+    {
+      "default": false,
+      "description": "Learned that Wren was dismissed from Vane's service.",
+      "id": "knows_wren_dismissed",
+      "kind": "flag"
+    },
+    {
+      "default": false,
+      "description": "Learned that Vane seized Calloway's cargo at the Kelder toll.",
+      "id": "knows_calloway_cargo",
+      "kind": "flag"
+    },
+    {
+      "default": false,
+      "description": "Wren admitted he crossed the yard in the night.",
+      "id": "wren_cracked",
+      "kind": "flag"
+    },
+    {
+      "default": false,
+      "description": "Named Aldous Wren to the militia.",
+      "id": "accused_wren",
+      "kind": "flag"
+    },
+    {
+      "default": false,
+      "description": "Named Sera Bragg to the militia.",
+      "id": "accused_bragg",
+      "kind": "flag"
+    },
+    {
+      "default": false,
+      "description": "Named Maud Calloway to the militia.",
+      "id": "accused_calloway",
+      "kind": "flag"
+    },
+    {
+      "default": false,
+      "description": "Let dawn come without naming anyone.",
+      "id": "named_no_one",
+      "kind": "flag"
+    },
+    {
+      "default": 0,
+      "description": "Hard facts established. The militia will not act on fewer than three.",
+      "id": "evidence_count",
+      "kind": "counter"
+    },
+    {
+      "default": "the clerk",
+      "description": "What you gave as your name when Bragg asked. Substituted into later lines as {investigator_name}.",
+      "id": "investigator_name",
+      "kind": "text"
+    }
+  ]
+}

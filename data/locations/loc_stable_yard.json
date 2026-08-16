@@ -1,0 +1,32 @@
+{
+  "description": "Four inches of standing water, a roped cart, and the Kelder somewhere out in the dark being far too loud.",
+  "exits": [
+    {
+      "id": "ex_inside",
+      "to": {
+        "location": "loc_common_room",
+        "spawn": "sp_yard_door"
+      }
+    }
+  ],
+  "id": "loc_stable_yard",
+  "interactables": [
+    {
+      "dialogue": "dlg_search_cart",
+      "id": "int_cart",
+      "kind": "object"
+    },
+    {
+      "character": "npc_calloway",
+      "id": "int_calloway",
+      "kind": "npc"
+    }
+  ],
+  "name": "The Stable Yard",
+  "spawns": [
+    {
+      "id": "sp_yard_gate"
+    }
+  ],
+  "zone": "zone_yard"
+}

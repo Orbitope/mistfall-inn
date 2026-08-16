@@ -1,0 +1,90 @@
+{
+  "entry": "node_again",
+  "id": "dlg_bragg_pressed",
+  "nodes": [
+    {
+      "choices": [
+        {
+          "goto": "node_who",
+          "id": "ch_who_up",
+          "text": "\"Who was still up after you turned in?\""
+        },
+        {
+          "goto": "node_wine",
+          "id": "ch_wine",
+          "text": "\"Who else went near that cup?\""
+        },
+        {
+          "check": {
+            "difficulty": 11,
+            "mode": "active",
+            "onFailure": "node_nothing",
+            "onSuccess": "node_soft",
+            "skill": "empathy"
+          },
+          "id": "ch_read_her",
+          "text": "Say nothing. Let the silence do it."
+        },
+        {
+          "goto": "node_done",
+          "id": "ch_done",
+          "text": "Leave her to the bar."
+        }
+      ],
+      "id": "node_again",
+      "text": "\"Back again, {investigator_name}.\" She does not stop what she is doing. \"Ask.\""
+    },
+    {
+      "id": "node_who",
+      "next": "node_ask_more",
+      "text": "\"The carter went up angry and stayed up angry — I could hear the floor. The apothecary sat where he always sits.\" A pause exactly one beat too long. \"For a while.\""
+    },
+    {
+      "id": "node_wine",
+      "next": "node_ask_more",
+      "text": "\"I poured it and I carried it and I set it down. After that it sat by his elbow for two hours with the whole room walking past it.\" She shrugs. \"That's not an answer. It's the truth, though.\""
+    },
+    {
+      "id": "node_soft",
+      "isEnd": true,
+      "speakerId": "empathy",
+      "text": "She is not frightened of being taken for the killer. She is frightened of being taken for a woman who would let a neighbour hang for her arrears — which means she has already thought about who else it could be, and arrived somewhere, and does not like it.\n\n\"Wren,\" she says, to the cup. \"He came back in wet. I didn't ask from where.\""
+    },
+    {
+      "id": "node_nothing",
+      "isEnd": true,
+      "text": "The silence goes on. She lets it, because she has kept a public house for nineteen years and silence is a thing she sells.\n\n\"Was there something else?\" she says pleasantly, and you have lost the moment."
+    },
+    {
+      "choices": [
+        {
+          "goto": "node_wet",
+          "id": "ch_for_a_while",
+          "text": "\"For a while?\""
+        },
+        {
+          "goto": "node_done",
+          "id": "ch_enough",
+          "text": "\"That's enough for now.\""
+        }
+      ],
+      "id": "node_ask_more",
+      "text": "She waits, in the way of someone who will answer exactly one more question and has decided which."
+    },
+    {
+      "id": "node_wet",
+      "isEnd": true,
+      "text": "\"For a while,\" she agrees. \"And then he wasn't in his chair. And then he was again, and there was water off him onto my floor.\" She finally looks up. \"I'd have said that whether you'd found the boots or not.\""
+    },
+    {
+      "id": "node_done",
+      "isEnd": true,
+      "text": "She returns to the cup, which is still dry."
+    }
+  ],
+  "speakerId": "npc_bragg",
+  "tags": [
+    "suspect"
+  ],
+  "title": "Bragg — Who Was Up"
+}
