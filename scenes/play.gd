@@ -182,8 +182,14 @@ func _pending_trigger() -> String:
 			continue
 		if item.has("showIf") and not Runtime.evaluate(item["showIf"], _state, _project):
 			continue
+		# Resolve BEFORE marking it fired. An NPC trigger whose ladder offers
+		# nothing right now resolves to "", and marking first would burn the
+		# trigger permanently on a beat that never played.
+		var dialogue_id := _dialogue_for(item)
+		if dialogue_id == "":
+			continue
 		_fired[item.get("id", "")] = true
-		return _dialogue_for(item)
+		return dialogue_id
 	return ""
 
 
