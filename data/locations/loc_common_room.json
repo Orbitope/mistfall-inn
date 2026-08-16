@@ -64,7 +64,7 @@
         "counter": "evidence_count",
         "op": ">=",
         "type": "counter",
-        "value": 3
+        "value": 5
       },
       "trigger": "on_enter"
     }
