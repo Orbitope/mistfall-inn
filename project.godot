@@ -4,23 +4,27 @@ config_version=5
 [application]
 config/name="The Mistfall Inn"
 config/features=PackedStringArray("4.4", "GL Compatibility")
-run/main_scene=""
+run/main_scene="res://scenes/play.tscn"
 
 [display]
-window/size/viewport_width=320
-window/size/viewport_height=180
-; viewport, not canvas_items. ws05's notes ask for both canvas_items AND
-; "dialogue UI at native resolution", which cannot both be true: canvas_items
-; rasterizes fonts at the WINDOW size, so every pixel-perfect font import
-; setting becomes moot and stems break at non-integer scales. viewport renders
-; the real 320x180 buffer and scales it by whole numbers, which is what makes a
-; pixel font land on the grid.
-window/stretch/mode="viewport"
-window/stretch/aspect="keep"
-window/stretch/scale_mode="integer"
+; Plain desktop window, deliberately.
+;
+; This project's scope is the RUNTIME PORT: the conformance suite is the
+; deliverable, and scenes/play.tscn is a no-art receipt showing the ported code
+; running real data in the default font. There is no pixel art to be
+; pixel-perfect about yet.
+;
+; The 320x180 integer-scaled configuration that used to live here was correct
+; for a game with authored art, and the reasoning behind it is worth keeping —
+; `git show 1f2b79a` has it in full. The short version: stretch/mode must be
+; "viewport", not "canvas_items", because canvas_items rasterizes fonts at the
+; WINDOW size, which makes every pixel-font import setting moot and breaks
+; stems at non-integer scales. Restore that block, not a fresh guess, if and
+; when art lands.
+window/size/viewport_width=1280
+window/size/viewport_height=720
 
 [rendering]
-textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 
 [editor_plugins]
