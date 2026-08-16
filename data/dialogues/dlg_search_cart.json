@@ -1,0 +1,89 @@
+{
+  "entry": "node_cart",
+  "id": "dlg_search_cart",
+  "nodes": [
+    {
+      "choices": [
+        {
+          "check": {
+            "difficulty": 8,
+            "mode": "active",
+            "onFailure": "node_slow",
+            "onSuccess": "node_found",
+            "skill": "observation"
+          },
+          "id": "ch_search",
+          "showIf": {
+            "has": false,
+            "item": "item_ledger_page",
+            "type": "item"
+          },
+          "text": "Go through it."
+        },
+        {
+          "goto": "node_recall",
+          "id": "ch_recall",
+          "showIf": {
+            "has": true,
+            "item": "item_ledger_page",
+            "type": "item"
+          },
+          "text": "You have already taken what was here."
+        },
+        {
+          "goto": "node_leave",
+          "id": "ch_leave",
+          "text": "Get out of the rain."
+        }
+      ],
+      "id": "node_cart",
+      "text": "Calloway's cart, roped under sacking, standing in four inches of yard water. The lantern throws more shadow than light, but it throws it where you want it."
+    },
+    {
+      "id": "node_found",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "item": "item_ledger_page",
+          "type": "give_item"
+        },
+        {
+          "counter": "evidence_count",
+          "delta": 1,
+          "type": "adjust_counter"
+        }
+      ],
+      "text": "Under the sacking, forced down between two boards where the wet has not reached: a single ledger page, folded twice, torn close to the binding.\n\nThe twelfth of the month. Vane's hand. A note of eleven shillings paid to a clerk of the assessment for figures, and the clerk named."
+    },
+    {
+      "id": "node_slow",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "item": "item_ledger_page",
+          "type": "give_item"
+        },
+        {
+          "counter": "evidence_count",
+          "delta": 1,
+          "type": "adjust_counter"
+        }
+      ],
+      "text": "You go through it twice in the rain with a lantern that keeps guttering, and you find it in the end — folded down between two boards under the sacking — but you are wet through and the sky over the Kelder has started to go grey while you worked.\n\nThe twelfth of the month. Vane's hand. Eleven shillings paid to a clerk of the assessment for figures, and the clerk named."
+    },
+    {
+      "id": "node_recall",
+      "isEnd": true,
+      "text": "Sacking, rope, water. The cart has given up everything it had."
+    },
+    {
+      "id": "node_leave",
+      "isEnd": true,
+      "text": "You leave the cart to the weather."
+    }
+  ],
+  "tags": [
+    "object"
+  ],
+  "title": "The Cart"
+}

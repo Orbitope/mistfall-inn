@@ -1,0 +1,12 @@
+{
+  "id": "fac_crown",
+  "name": "The Crown Assessment",
+  "opposes": [
+    "fac_road"
+  ],
+  "reputationRange": {
+    "max": 10,
+    "min": -10
+  },
+  "summary": "The office Halloran Vane rode for. It values a bridge, a barn, or a life at whatever the ledger says."
+}

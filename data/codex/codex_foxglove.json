@@ -1,0 +1,26 @@
+{
+  "body": "Tall, purple, common in hedgerows. Beautiful, and fatal in quantity — the symptoms read as a bad heart to anyone not looking for poison. Knowing that is not the same as proving who knew it.",
+  "category": "evidence",
+  "id": "codex_foxglove",
+  "name": "Foxglove",
+  "tags": [
+    "act1"
+  ],
+  "unlockedBy": {
+    "of": [
+      {
+        "op": ">=",
+        "quest": "qst_inquest",
+        "stage": "stg_gather",
+        "type": "quest"
+      },
+      {
+        "character": "npc_wren",
+        "op": ">=",
+        "type": "relationship",
+        "value": 1
+      }
+    ],
+    "type": "all"
+  }
+}

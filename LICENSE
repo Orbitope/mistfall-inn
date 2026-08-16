@@ -1,7 +1,8 @@
 This repository is licensed in parts.
 
-MIT — the GDScript runtime (`addons/parlance/`), and the vendored specification
-files (`conformance/`, `schema/`) which arrive under Parlance's own MIT grant.
+MIT — the GDScript runtime (`addons/parlance/`), the conformance runner
+(`tests/`) and demo scene (`scenes/`), and the vendored specification files
+(`conformance/`, `schema/`) which arrive under Parlance's own MIT grant.
 
     Copyright (c) 2026 Matthew Burke
 

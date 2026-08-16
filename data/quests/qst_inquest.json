@@ -1,0 +1,158 @@
+{
+  "id": "qst_inquest",
+  "journalName": "One Night at the Mistfall",
+  "loreRef": {
+    "file": "lore/mistfall.md"
+  },
+  "name": "The Mistfall Inquest",
+  "outcomes": [
+    {
+      "description": "Wren was named, and Wren did it.",
+      "effects": [
+        {
+          "amount": 150,
+          "type": "grant_xp"
+        }
+      ],
+      "id": "out_right",
+      "kind": "success",
+      "reachedWhen": {
+        "flag": "accused_wren",
+        "type": "flag",
+        "value": true
+      }
+    },
+    {
+      "description": "Someone was taken down the ford road who had not poisoned anybody.",
+      "effects": [
+        {
+          "amount": 50,
+          "type": "grant_xp"
+        }
+      ],
+      "id": "out_wrong",
+      "kind": "failure",
+      "reachedWhen": {
+        "of": [
+          {
+            "flag": "accused_bragg",
+            "type": "flag",
+            "value": true
+          },
+          {
+            "flag": "accused_calloway",
+            "type": "flag",
+            "value": true
+          }
+        ],
+        "type": "any"
+      }
+    },
+    {
+      "description": "No name was given and no one was hanged for it.",
+      "effects": [
+        {
+          "amount": 100,
+          "type": "grant_xp"
+        }
+      ],
+      "id": "out_silent",
+      "kind": "neutral",
+      "reachedWhen": {
+        "flag": "named_no_one",
+        "type": "flag",
+        "value": true
+      }
+    }
+  ],
+  "stages": [
+    {
+      "completeWhen": {
+        "flag": "knows_poison",
+        "type": "flag",
+        "value": true
+      },
+      "description": "I established that Vane was poisoned rather than struck.",
+      "id": "stg_body",
+      "objectives": [
+        {
+          "id": "ob_body",
+          "text": "Go over the body properly before anyone else decides what happened to it."
+        },
+        {
+          "id": "ob_ledger",
+          "text": "Read the ledger he was working in when he died."
+        }
+      ],
+      "order": 1
+    },
+    {
+      "completeWhen": {
+        "counter": "evidence_count",
+        "op": ">=",
+        "type": "counter",
+        "value": 3
+      },
+      "description": "I put three hard facts together before the road opened.",
+      "id": "stg_gather",
+      "objectives": [
+        {
+          "id": "ob_ask",
+          "text": "Get each of the three of them to tell me why they are glad he is dead."
+        },
+        {
+          "id": "ob_yard",
+          "showIf": {
+            "flag": "saw_wet_boots",
+            "type": "flag",
+            "value": true
+          },
+          "text": "Find out who crossed the yard in the rain tonight."
+        }
+      ],
+      "order": 2
+    },
+    {
+      "completeWhen": {
+        "of": [
+          {
+            "flag": "accused_wren",
+            "type": "flag",
+            "value": true
+          },
+          {
+            "flag": "accused_bragg",
+            "type": "flag",
+            "value": true
+          },
+          {
+            "flag": "accused_calloway",
+            "type": "flag",
+            "value": true
+          },
+          {
+            "flag": "named_no_one",
+            "type": "flag",
+            "value": true
+          }
+        ],
+        "type": "any"
+      },
+      "description": "I gave the sergeant a name, or I did not.",
+      "id": "stg_name",
+      "objectives": [
+        {
+          "id": "ob_name",
+          "text": "Decide what I am willing to say out loud to a sergeant in a hurry."
+        }
+      ],
+      "order": 3
+    }
+  ],
+  "startsAvailable": true,
+  "summary": "Halloran Vane died at the corner table some time before four in the morning. The ford opens at first light and the militia will take whoever you name.",
+  "tags": [
+    "main",
+    "act1"
+  ]
+}

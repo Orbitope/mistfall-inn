@@ -1,0 +1,28 @@
+{
+  "portraits": [
+    {
+      "character": "npc_bragg",
+      "id": "portrait_bragg",
+      "name": "Sera Bragg",
+      "tags": [
+        "named"
+      ]
+    },
+    {
+      "character": "npc_wren",
+      "id": "portrait_wren",
+      "name": "Aldous Wren",
+      "tags": [
+        "named"
+      ]
+    },
+    {
+      "character": "npc_calloway",
+      "id": "portrait_calloway",
+      "name": "Maud Calloway",
+      "tags": [
+        "named"
+      ]
+    }
+  ]
+}

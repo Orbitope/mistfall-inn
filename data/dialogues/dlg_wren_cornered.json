@@ -1,0 +1,133 @@
+{
+  "entry": "node_corner",
+  "id": "dlg_wren_cornered",
+  "nodes": [
+    {
+      "choices": [
+        {
+          "goto": "node_press",
+          "id": "ch_boots",
+          "showIf": {
+            "flag": "saw_wet_boots",
+            "type": "flag",
+            "value": true
+          },
+          "text": "\"Someone crossed the yard tonight and came back in.\""
+        },
+        {
+          "goto": "node_page",
+          "id": "ch_page",
+          "showIf": {
+            "has": true,
+            "item": "item_ledger_page",
+            "type": "item"
+          },
+          "text": "Hold up the torn page without a word."
+        },
+        {
+          "goto": "node_foxglove",
+          "id": "ch_foxglove",
+          "showIf": {
+            "flag": "knows_foxglove",
+            "type": "flag",
+            "value": true
+          },
+          "text": "\"Foxglove. Steeped badly, by someone in a hurry.\""
+        },
+        {
+          "goto": "node_wait",
+          "id": "ch_wait",
+          "text": "Sit down on the step below him and say nothing."
+        }
+      ],
+      "id": "node_corner",
+      "text": "He has not moved from the step. He watches you come up the stairs and something in his face gets ready."
+    },
+    {
+      "id": "node_press",
+      "next": "node_choose",
+      "text": "\"In the rain,\" he agrees. \"Yes. Someone did.\" His hands stay exactly where they are on the case."
+    },
+    {
+      "id": "node_page",
+      "next": "node_choose",
+      "text": "He looks at it for a long moment — at the torn edge, mostly, rather than the writing.\n\n\"That was in the cart,\" he says. \"Wasn't it.\""
+    },
+    {
+      "id": "node_foxglove",
+      "next": "node_choose",
+      "text": "\"Badly,\" he repeats, and something goes out of him. \"Yes. It was badly done. I've thought about that more than I've thought about him.\""
+    },
+    {
+      "choices": [
+        {
+          "check": {
+            "difficulty": 12,
+            "mode": "active",
+            "onFailure": "node_hold",
+            "onSuccess": "node_break",
+            "skill": "rhetoric"
+          },
+          "id": "ch_finish",
+          "text": "\"Say the rest, Aldous.\""
+        },
+        {
+          "check": {
+            "difficulty": 10,
+            "mode": "active",
+            "onFailure": "node_hold",
+            "onSuccess": "node_break",
+            "skill": "empathy"
+          },
+          "id": "ch_gentle",
+          "text": "\"You've been composing it all night. Let's hear it.\""
+        },
+        {
+          "goto": "node_stop",
+          "id": "ch_stop",
+          "text": "Leave it there. You have enough."
+        }
+      ],
+      "id": "node_choose",
+      "text": "The stair creaks under the weight of the pause."
+    },
+    {
+      "id": "node_wait",
+      "isEnd": true,
+      "text": "You sit. Below him, which he notices. The house ticks and settles around the two of you and he does not fill the silence, because he is a man who has spent four years in an office learning not to.\n\nEventually: \"You should look in the yard,\" he says. \"If you haven't.\""
+    },
+    {
+      "id": "node_break",
+      "isEnd": true,
+      "onEnter": [
+        {
+          "flag": "wren_cracked",
+          "type": "set_flag",
+          "value": true
+        },
+        {
+          "counter": "evidence_count",
+          "delta": 1,
+          "type": "adjust_counter"
+        }
+      ],
+      "text": "\"The twelfth of the month,\" he says. \"He wrote on the twelfth that I'd sold assessment figures to a carter at the Kelder toll. Which I had. One time, for eleven shillings, because I hadn't eaten.\" His voice does not rise at all. \"That page was going to Kelder with him at first light, and then I would not have been a man without a character. I'd have been a man with one.\"\n\nHe sets the case down on the step beside him, finally.\n\n\"I put the page in her cart because I could not make myself burn it and I could not make myself keep it. That is the whole of what I did that I'm ashamed of.\""
+    },
+    {
+      "id": "node_hold",
+      "isEnd": true,
+      "text": "\"The rest,\" he says, \"is that I went out to the yard, and I came back in, and I have told you that.\" He is shaking, faintly and continuously, and he does not say another word.\n\nHe has given you the yard. He has not given you the reason, and you can feel the door closing on it."
+    },
+    {
+      "id": "node_stop",
+      "isEnd": true,
+      "text": "You leave him on the step with the case across his knees, composing."
+    }
+  ],
+  "speakerId": "npc_wren",
+  "tags": [
+    "suspect",
+    "climax"
+  ],
+  "title": "Wren — The Yard"
+}

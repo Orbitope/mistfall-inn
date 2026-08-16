@@ -1,0 +1,89 @@
+{
+  "description": "Low beams, a dying fire, and a corner table nobody is sitting at any more.",
+  "exits": [
+    {
+      "id": "ex_upstairs",
+      "to": {
+        "location": "loc_landing",
+        "spawn": "sp_stairs_top"
+      }
+    },
+    {
+      "denialDialogue": "dlg_yard_dark",
+      "gate": {
+        "has": true,
+        "item": "item_lantern",
+        "type": "item"
+      },
+      "gateType": "act_gate",
+      "id": "ex_yard",
+      "to": {
+        "location": "loc_stable_yard",
+        "spawn": "sp_yard_gate"
+      }
+    }
+  ],
+  "id": "loc_common_room",
+  "interactables": [
+    {
+      "dialogue": "dlg_arrival",
+      "id": "int_opening",
+      "kind": "object",
+      "showIf": {
+        "flag": "heard_the_room",
+        "type": "flag",
+        "value": false
+      },
+      "trigger": "on_enter"
+    },
+    {
+      "dialogue": "dlg_examine_body",
+      "id": "int_body",
+      "kind": "object"
+    },
+    {
+      "dialogue": "dlg_examine_ledger",
+      "id": "int_ledger",
+      "kind": "object"
+    },
+    {
+      "dialogue": "dlg_yard_door",
+      "id": "int_yard_door",
+      "kind": "object"
+    },
+    {
+      "character": "npc_bragg",
+      "id": "int_bragg",
+      "kind": "npc"
+    },
+    {
+      "dialogue": "dlg_accuse",
+      "id": "int_militia",
+      "kind": "object",
+      "showIf": {
+        "counter": "evidence_count",
+        "op": ">=",
+        "type": "counter",
+        "value": 5
+      },
+      "trigger": "on_enter"
+    }
+  ],
+  "name": "The Common Room",
+  "spawns": [
+    {
+      "id": "sp_hearth",
+      "isDefault": true
+    },
+    {
+      "id": "sp_stairs_foot"
+    },
+    {
+      "id": "sp_yard_door"
+    }
+  ],
+  "tags": [
+    "start"
+  ],
+  "zone": "zone_inn"
+}

@@ -1,0 +1,17 @@
+{
+  "maxSkill": 8,
+  "pointsPerLevel": 1,
+  "startingSkills": {
+    "empathy": 2,
+    "nerve": 2,
+    "observation": 3,
+    "rhetoric": 2
+  },
+  "xpThresholds": [
+    0,
+    100,
+    250,
+    450,
+    700
+  ]
+}
