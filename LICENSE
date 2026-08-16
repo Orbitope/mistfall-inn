@@ -1,10 +1,9 @@
 This repository is licensed in parts.
 
-MIT — the GDScript runtime (`addons/parlance/`), the conformance runner
-(`tests/`), the game (`scenes/`), the character portraits (`assets/`, generated
-rather than third-party and carrying no external licence), and the vendored
-specification files (`conformance/`, `schema/`) which arrive under Parlance's
-own MIT grant.
+MIT — the game (`scenes/`), the character portraits (`assets/`, generated rather
+than third-party and carrying no external licence), and the vendored Parlance
+runtime (`addons/parlance/`), which arrives under its own MIT grant from
+https://github.com/Orbitope/parlance-gdscript.
 
     Copyright (c) 2026 Matthew Burke
 
