@@ -4,9 +4,9 @@ extends RefCounted
 ## The Parlance runtime, ported to GDScript.
 ##
 ## Ported families: evaluate, applyEffect, resolveCheck, stepDialogue,
-## chooseChoice, advanceNode. NOT ported: resolveQuests, progression,
-## resolveCharacterDialogue. The conformance runner reports those as SKIP
-## rather than passing them by omission.
+## chooseChoice, advanceNode, resolveCharacterDialogue. NOT ported:
+## resolveQuests, progression, nextContinuations. The conformance runner
+## reports those as SKIP rather than passing them by omission.
 ##
 ## `project` is a plain Dictionary in the vectors' MinimalProject shape
 ## (`{"factions": {...}, "quests": {...}}`). Missing sub-objects are legal and
@@ -15,7 +15,9 @@ extends RefCounted
 ##
 ## ERRORS. GDScript has no exceptions, so the one family with a throw contract
 ## (`advance_node`) returns `{"error": "..."}` instead. Callers must check for
-## that key — see the function's own note. Every other entry point is total.
+## that key — see the function's own note. `resolve_check` (and so
+## `choose_choice`) does the same for a check that declares modifiers but is
+## given no project. Every other entry point is total.
 
 const Rng := preload("res://addons/parlance/rng.gd")
 const State := preload("res://addons/parlance/state.gd")
@@ -33,6 +35,38 @@ static func evaluate(condition, state: State, project := {}) -> bool:
 ## `visiting` carries the questOutcome reference cycle guard. An outcome whose
 ## `reachedWhen` leads back to itself is false rather than a stack overflow —
 ## the suite has a vector for exactly that.
+## How SPECIFIC a condition is — the "most specific offer wins" tiebreak in
+## resolve_character_dialogue. Lives beside evaluate because the reference does.
+##
+##   absent (a fallback offer) -> 0      any leaf -> 1
+##   all -> SUM of members               any -> MIN of members (0 if empty)
+##   not -> its operand's
+##
+## `any` is MIN, not a clause count: any(a, b, c) is only as specific as its
+## weakest branch, and a count would rank it above `a` alone. Total and pure.
+static func condition_specificity(condition) -> int:
+	if not condition is Dictionary:
+		return 0
+	match condition.get("type", ""):
+		"all":
+			var total := 0
+			for c in condition.get("of", []):
+				total += condition_specificity(c)
+			return total
+		"any":
+			var members: Array = condition.get("of", [])
+			if members.is_empty():
+				return 0
+			var lowest := condition_specificity(members[0])
+			for c in members:
+				lowest = mini(lowest, condition_specificity(c))
+			return lowest
+		"not":
+			return condition_specificity(condition.get("of", null))
+		_:
+			return 1
+
+
 static func _evaluate(condition, state: State, project: Dictionary, visiting: Dictionary) -> bool:
 	if not condition is Dictionary:
 		return false
@@ -212,9 +246,9 @@ static func apply_effect(effect, state: State, project := {}) -> State:
 			next.xp += float(effect.get("amount", 0))
 
 		"set_active_dialogue":
-			# The feed model: a flag, not a separate map. The character's ladder
-			# carries a high-priority rung gated on it, and `dialogue` is
-			# metadata for tooling. Clear it with an ordinary set_flag false.
+			# The feed model: a flag, not a separate map. The forced dialogue
+			# carries a tier-1 offer gated on it, and `dialogue` is metadata
+			# for tooling. Clear it with an ordinary set_flag false.
 			next.flags["active_dialogue__" + str(effect.get("character", ""))] = true
 
 		"play_cutscene":
@@ -247,7 +281,19 @@ static func apply_effects(effects, state: State, project := {}) -> State:
 ##
 ## `default_dice` is the project's `rules.check.dice`. Precedence is
 ## check.dice > default_dice > 1d20.
-static func resolve_check(check: Dictionary, state: State, rng: Callable, default_dice = null, criticals := false) -> Dictionary:
+##
+## MODIFIERS (contract 0.14.0): total = roll + skill + check_bonus. Evaluating a
+## modifier's `when` needs the project (quest conditions read stage order), so
+## a check that declares modifiers and is given no project returns
+## `{"error": ...}` — the reference throws there rather than read those
+## conditions as silently false. `bonus` and `appliedModifiers` appear in the
+## result ONLY when the check declares a modifier, so an unmodified check's
+## result is byte-identical to the pre-0.14 one.
+static func resolve_check(check: Dictionary, state: State, rng: Callable, default_dice = null, criticals := false, project = null) -> Dictionary:
+	var has_modifiers: bool = check.get("modifiers", null) is Array and not check["modifiers"].is_empty()
+	if has_modifiers and not project is Dictionary:
+		return {"error": "resolve_check: check has modifiers; pass project"}
+
 	var notation := str(check.get("dice", default_dice if default_dice != null else "1d20"))
 	var spec := parse_dice(notation)
 
@@ -260,7 +306,8 @@ static func resolve_check(check: Dictionary, state: State, rng: Callable, defaul
 		roll += face
 
 	var skill_value := float(state.skills.get(check.get("skill", ""), 0))
-	var total := float(roll) + skill_value
+	var mod := check_bonus(check, state, project) if has_modifiers else {}
+	var total := float(roll) + skill_value + float(mod.get("bonus", 0))
 	var passed := total >= float(check.get("difficulty", 0))
 
 	var result := {
@@ -270,6 +317,9 @@ static func resolve_check(check: Dictionary, state: State, rng: Callable, defaul
 		"skillValue": skill_value,
 		"dice": "%dd%d" % [spec.n, spec.m],
 	}
+	if has_modifiers:
+		result["bonus"] = mod["bonus"]
+		result["appliedModifiers"] = mod["appliedModifiers"]
 
 	# Criticals are judged on individual FACES, never the sum: 7 on 2d6 is 1+6
 	# or 3+4, and neither is critical. Default off — enabling changes every
@@ -290,6 +340,32 @@ static func resolve_check(check: Dictionary, state: State, rng: Callable, defaul
 			result["critical"] = "failure"
 
 	return result
+
+
+## Σ of every modifier's `bonus` whose `when` holds, plus the indices that
+## contributed, in array order: `{"bonus": float, "appliedModifiers": [int]}`.
+## THE one place modifiers are summed, so the roll and the passive reveal can
+## never disagree. Total and pure.
+static func check_bonus(check: Dictionary, state: State, project = {}) -> Dictionary:
+	var proj: Dictionary = project if project is Dictionary else {}
+	var bonus := 0.0
+	var applied: Array = []
+	var mods = check.get("modifiers", null)
+	if mods is Array:
+		for i in mods.size():
+			var m = mods[i]
+			if m is Dictionary and evaluate(m.get("when", null), state, proj):
+				bonus += float(m.get("bonus", 0))
+				applied.append(i)
+	return {"bonus": bonus, "appliedModifiers": applied}
+
+
+## Whether a PASSIVE check reveals its choice: skill + Σbonus >= difficulty.
+## Passive checks do not roll; this is the threshold an engine applies to show
+## or hide the option, so a modifier means the same thing in both modes.
+static func passive_check_passes(check: Dictionary, state: State, project := {}) -> bool:
+	var skill_value := float(state.skills.get(check.get("skill", ""), 0))
+	return skill_value + float(check_bonus(check, state, project)["bonus"]) >= float(check.get("difficulty", 0))
 
 
 ## "NdM" -> {n, m}. Falls back to 1d20 on anything unparseable rather than
@@ -319,6 +395,24 @@ static func step_dialogue(dialogue: Dictionary, node_id: String, state: State, p
 	var node: Variant = find_node(dialogue, node_id)
 	if node == null:
 		return {"error": "node '%s' does not exist in dialogue '%s'" % [node_id, dialogue.get("id", "?")]}
+
+	# Node-level showIf skip walk (contract 0.11.0): stepping onto a gated node
+	# whose gate fails resolves to the node the player actually sees — the same
+	# skip advance_node performs. A ring of failing gates is COND-invalid and is
+	# reported rather than looped.
+	var seen := {}
+	while node.has("showIf") and not evaluate(node["showIf"], state, project):
+		var here := str(node.get("id", node_id))
+		if seen.has(here):
+			return {"error": "Cycle among conditional nodes: resolution cannot escape"}
+		seen[here] = true
+		if not node.has("next"):
+			return {"error": "conditional node '%s' has no 'next' to skip to" % here}
+		var next_id := str(node["next"])
+		var next_node: Variant = find_node(dialogue, next_id)
+		if next_node == null:
+			return {"error": "next target '%s' does not exist in dialogue '%s'" % [next_id, dialogue.get("id", "?")]}
+		node = next_node
 
 	var visible: Array = []
 	for choice in node.get("choices", []):
@@ -379,7 +473,9 @@ static func choose_choice(dialogue: Dictionary, node_id: String, choice_id: Stri
 	var check = choice.get("check", null)
 	if check is Dictionary and check.get("mode", "") == "active":
 		var rules: Dictionary = project.get("rules", {}).get("check", {}) if project.get("rules", null) is Dictionary else {}
-		var result := resolve_check(check, next_state, rng, rules.get("dice", null), bool(rules.get("criticals", false)))
+		var result := resolve_check(check, next_state, rng, rules.get("dice", null), bool(rules.get("criticals", false)), project)
+		if result.has("error"):
+			return result
 		return {
 			"nextNodeId": check.get("onSuccess", null) if result["passed"] else check.get("onFailure", null),
 			"newState": next_state,
@@ -422,36 +518,104 @@ static func advance_node(dialogue: Dictionary, node_id: String, state: State) ->
 		return {"error": "node '%s' has no 'next' to advance from" % node_id}
 
 	var target_id := str(node["next"])
-	if find_node(dialogue, target_id) == null:
-		return {"error": "next target '%s' does not exist in dialogue '%s'" % [target_id, dialogue.get("id", "?")]}
+
+	# Node-level showIf skip walk (contract 0.11.0): cross gated nodes whose gate
+	# fails, following each one's `next`, until a shown node is reached. A ring of
+	# failing gates is COND-invalid data and is reported, not looped. onEnter does
+	# not fire here — advance is navigation, exactly as the ungated path is.
+	var visited := {}
+	while true:
+		var target_node: Variant = find_node(dialogue, target_id)
+		if target_node == null:
+			return {"error": "next target '%s' does not exist in dialogue '%s'" % [target_id, dialogue.get("id", "?")]}
+		if not target_node.has("showIf"):
+			break
+		if evaluate(target_node["showIf"], state, {}):
+			break
+		if visited.has(target_id):
+			return {"error": "Cycle among conditional nodes: resolution cannot escape"}
+		visited[target_id] = true
+		if not target_node.has("next"):
+			return {"error": "conditional node '%s' has no 'next' to skip to" % target_id}
+		target_id = str(target_node["next"])
 
 	return {"nextNodeId": target_id, "newState": state}
 
 
-# ------------------------------------------- resolveCharacterDialogue (feed) --
+# ----------------------------------------- resolveCharacterDialogue (offers) --
 
 
-## Which dialogue this character offers right now, or null.
+## Which dialogue this character offers right now, or null (contract 0.14.0).
 ##
-## Walks `character.dialogues` — the ladder — IN ORDER and returns the first
-## rung whose `showIf` passes; a rung with no `showIf` always passes. Array
-## order is the whole mechanism: the specific, conditional rungs sit above the
-## general fallback, so first-match-wins reads as "the most specific thing this
-## character has to say today".
+## A dialogue opts in by carrying an `offer` object — its PRESENCE is the
+## opt-in, so `"offer": {}` is a fallback and a dialogue with no `offer` is
+## never a candidate. It is offered by `offer.character ?? speakerId`. Among
+## this character's offers, those whose `offer.when` passes (absent = always)
+## are eligible, minus — when `visited` is given — any non-`replayable` one
+## already seen. The winner is the most salient eligible offer:
 ##
-## Returns null when the ladder is absent, empty, or nothing matches.
+##   1. priority tier  descending  (offer.priority, default 0)
+##   2. specificity    descending  (condition_specificity(offer.when))
+##   3. id             ascending   (ordinal code-unit compare, NOT locale)
+##
+## There is no array order anywhere: which file a dialogue lives in, or where
+## it sits in `project.dialogues`, never changes the answer.
 ##
 ## The feed model: there is no `activeDialogues` map. `set_active_dialogue`
-## sets the flag `active_dialogue__{character}`, and a high-priority rung gated
-## on that flag is what pins a character to one conversation.
-static func resolve_character_dialogue(state: State, character: Dictionary, project := {}) -> Variant:
-	for rung in character.get("dialogues", []):
-		if not rung is Dictionary:
+## sets the flag `active_dialogue__{character}`, and the forced dialogue carries
+## a tier-1 offer gated on it, which out-ranks every tier-0 offer.
+##
+## `visited` is an Array (or Dictionary keyed by id) of dialogue ids the host
+## has shown; omit it for the pure state answer.
+static func resolve_character_dialogue(state: State, character: Dictionary, project := {}, visited = null) -> Variant:
+	var character_id = character.get("id", null)
+	var dialogues = project.get("dialogues", {})
+	if not dialogues is Dictionary:
+		return null
+
+	var best = null
+	for dialogue in dialogues.values():
+		if not dialogue is Dictionary:
 			continue
-		if rung.has("showIf") and not evaluate(rung["showIf"], state, project):
+		# `is Dictionary`, not `has`: hand-edited data can carry `offer: null`,
+		# which the validator reports but the runtime must survive.
+		var offer = dialogue.get("offer", null)
+		if not offer is Dictionary:
 			continue
-		return rung.get("dialogue", null)
-	return null
+		if offer.get("character", dialogue.get("speakerId", null)) != character_id:
+			continue
+		if offer.has("when") and not evaluate(offer["when"], state, project):
+			continue
+		if visited != null and dialogue.get("replayable", false) != true and _visited_has(visited, dialogue.get("id", null)):
+			continue
+		if best == null or _better_offer(dialogue, best):
+			best = dialogue
+
+	return best.get("id", null) if best != null else null
+
+
+## True if offer `a` outranks `b`: higher tier, then higher specificity, then
+## the lower id. GDScript's String `<` compares code points, which orders
+## exactly like the reference's UTF-16 compare for every id outside the astral
+## planes — and ids are ASCII by schema.
+static func _better_offer(a: Dictionary, b: Dictionary) -> bool:
+	var pa := int(a["offer"].get("priority", 0))
+	var pb := int(b["offer"].get("priority", 0))
+	if pa != pb:
+		return pa > pb
+	var sa := condition_specificity(a["offer"].get("when", null))
+	var sb := condition_specificity(b["offer"].get("when", null))
+	if sa != sb:
+		return sa > sb
+	return str(a.get("id", "")) < str(b.get("id", ""))
+
+
+static func _visited_has(visited, id) -> bool:
+	if visited is Dictionary:
+		return visited.has(id)
+	if visited is Array:
+		return visited.has(id)
+	return false
 
 
 # ------------------------------------------------------ speaker / portrait --
@@ -476,8 +640,8 @@ static func effective_speaker_id(dialogue: Dictionary, node: Dictionary) -> Vari
 ##   {"kind": "narration"} | {"kind": "character", "character": {...}}
 ##                         | {"kind": "skill", "skill": {...}}
 ##
-## A dialogue-level speakerId is character-only (it doubles as ownership for
-## ladder resolution); only the NODE level may name a skill — that is the
+## A dialogue-level speakerId is character-only (it doubles as the default
+## `offer.character` for offer resolution); only the NODE level may name a skill — that is the
 ## skill-voiced beat, an inner voice speaking a line.
 ##
 ## "No speakerId" and "a dangling speakerId" BOTH resolve to narration here.

@@ -82,6 +82,13 @@
       "text": "She returns to the cup, which is still dry."
     }
   ],
+  "offer": {
+    "when": {
+      "flag": "knows_bragg_debt",
+      "type": "flag",
+      "value": true
+    }
+  },
   "speakerId": "npc_bragg",
   "tags": [
     "suspect"

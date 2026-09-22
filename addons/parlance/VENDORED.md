@@ -10,3 +10,7 @@ conformance suite — this repo does not carry the vectors — so it would look
 correct while diverging from the format the addon claims to implement.
 
 Upstream also holds `conformance/` and `schema/`, and runs the vectors in CI.
+
+Current copy: the runtime pinned to Parlance v0.14.0 (dialogue offers, check
+modifiers, node-level `showIf`). Only `runtime.gd` changed in that re-copy; the
+other files were already identical upstream.

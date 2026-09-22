@@ -39,6 +39,13 @@
       "text": "She goes back to the wheel that does not need her."
     }
   ],
+  "offer": {
+    "when": {
+      "flag": "knows_calloway_cargo",
+      "type": "flag",
+      "value": true
+    }
+  },
   "speakerId": "npc_calloway",
   "tags": [
     "suspect"

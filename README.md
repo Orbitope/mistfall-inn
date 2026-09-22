@@ -30,7 +30,7 @@ to. All three endings are reachable, and the correct answer is gettable.
 ## How it's built
 
 The story is not in the code. It is plain JSON under `data/` — dialogues,
-conditions, effects, skill checks, character dialogue ladders, endings — in the
+conditions, effects, skill checks, character dialogue offers, endings — in the
 [Parlance](https://github.com/Orbitope/parlance) narrative format, executed by
 [parlance-gdscript](https://github.com/Orbitope/parlance-gdscript).
 
@@ -68,17 +68,25 @@ automatically.
 from a flat d20 to a bell curve, correctly, because the probability is derived
 from the notation rather than assumed.
 
-**Add a suspect.** A character is one JSON file plus a `dialogues` ladder — an
-ordered list where the first rung whose `showIf` passes is what they say today.
-That ordering is the whole mechanism for making someone respond to what you have
-learned.
+**Add a suspect.** A character is one JSON file; what they say is decided by the
+dialogues that carry an `offer` for them. Each offer has an optional `when`
+gate, and the most specific one that passes is what they say today — so
+`dlg_bragg_pressed`, gated on `knows_bragg_debt`, beats the ungated
+`dlg_bragg_first` the moment you learn about the debt. That is the whole
+mechanism for making someone respond to what you have learned, and no list
+anywhere has to be kept in order.
+
+**Tilt a roll.** Give any check a `modifiers` list —
+`{"when": <condition>, "bonus": 2}` — and the bonus applies only while its
+condition holds. The odds the UI quotes include it, because they come from the
+same `check_bonus` the roll uses.
 
 ## Provenance
 
 `data/` and `lore/` are a copy of the Mistfall Inn demo that ships with
-Parlance, verified byte-identical when vendored. One deliberate divergence
-since: the militia threshold was raised from 3 to 5, in its own commit so it is
-visible in `git log data/`.
+Parlance, last re-synced from Parlance v0.14.0 and byte-identical to it but for
+one deliberate divergence: the militia threshold was raised from 3 to 5, in its
+own commit so it is visible in `git log data/`.
 
 ## Licensing
 
