@@ -1,0 +1,19 @@
+name: Validate narrative
+
+# The story is data, so a broken reference or a stale format is a build break
+# like any other. This runs the same checks the Parlance editor shows an author,
+# pinned to the Parlance release data/ was last synced from.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Orbitope/parlance-releases/validate@v0.14.0
+        with:
+          strict: "true"

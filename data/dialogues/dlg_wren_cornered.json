@@ -45,18 +45,28 @@
     },
     {
       "id": "node_press",
-      "next": "node_choose",
+      "next": "node_weighs",
       "text": "\"In the rain,\" he agrees. \"Yes. Someone did.\" His hands stay exactly where they are on the case."
     },
     {
       "id": "node_page",
-      "next": "node_choose",
+      "next": "node_weighs",
       "text": "He looks at it for a long moment — at the torn edge, mostly, rather than the writing.\n\n\"That was in the cart,\" he says. \"Wasn't it.\""
     },
     {
       "id": "node_foxglove",
-      "next": "node_choose",
+      "next": "node_weighs",
       "text": "\"Badly,\" he repeats, and something goes out of him. \"Yes. It was badly done. I've thought about that more than I've thought about him.\""
+    },
+    {
+      "id": "node_weighs",
+      "next": "node_choose",
+      "showIf": {
+        "flag": "knows_foxglove",
+        "type": "flag",
+        "value": true
+      },
+      "text": "You know what was in the cup. That is the part that will not settle — not that he did it, but that he had to steep it first, and strain it, and carry it up the stairs while it was still warm."
     },
     {
       "choices": [
@@ -124,6 +134,13 @@
       "text": "You leave him on the step with the case across his knees, composing."
     }
   ],
+  "offer": {
+    "when": {
+      "flag": "knows_wren_dismissed",
+      "type": "flag",
+      "value": true
+    }
+  },
   "speakerId": "npc_wren",
   "tags": [
     "suspect",

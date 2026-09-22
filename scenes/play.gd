@@ -182,7 +182,7 @@ func _pending_trigger() -> String:
 			continue
 		if item.has("showIf") and not Runtime.evaluate(item["showIf"], _state, _project):
 			continue
-		# Resolve BEFORE marking it fired. An NPC trigger whose ladder offers
+		# Resolve BEFORE marking it fired. An NPC trigger whose character offers
 		# nothing right now resolves to "", and marking first would burn the
 		# trigger permanently on a beat that never played.
 		var dialogue_id := _dialogue_for(item)
@@ -194,7 +194,8 @@ func _pending_trigger() -> String:
 
 
 ## An interactable's dialogue. For an NPC that means asking the runtime which
-## rung of the character's ladder applies right now — not a fixed dialogue id.
+## of the dialogues offered for that character wins right now — not a fixed
+## dialogue id.
 func _dialogue_for(item: Dictionary) -> String:
 	if item.get("kind", "") == "npc":
 		var characters: Dictionary = _project.get("characters", {})
@@ -224,10 +225,10 @@ func _render_location() -> void:
 			continue
 		var dialogue_id := _dialogue_for(item)
 		if dialogue_id == "":
-			continue  # An NPC whose ladder currently offers nothing.
+			continue  # An NPC who currently offers nothing.
 		# Keyed on the RESOLVED dialogue, not the interactable. That is what
 		# makes a character with something new to say read as unvisited: once
-		# Bragg's ladder moves to `dlg_bragg_pressed`, the tick clears itself.
+		# Bragg's offer moves to `dlg_bragg_pressed`, the tick clears itself.
 		var seen := "✓ " if _seen.has(dialogue_id) else "• "
 		_add_button(seen + _label_for(item, dialogue_id), _on_interact.bind(dialogue_id))
 
@@ -379,8 +380,11 @@ func _on_choice(choice_id: String) -> void:
 		var skill_name := str(skills.get(check.get("skill", ""), {}).get("name", check.get("skill", "")))
 		# Held for the NEXT node to display: the roll explains the beat the
 		# player is about to read, so it belongs above that text, not here.
-		_last_check = "%s — rolled %d + %d = %d vs %d · %s%s" % [
-			skill_name, int(r["roll"]), int(r["skillValue"]), int(r["total"]),
+		# A check with modifiers reports the applied bonus; show it as its
+		# own term so the sum on screen adds up.
+		var bonus_term := _signed_term(int(r.get("bonus", 0)))
+		_last_check = "%s — rolled %d + %d%s = %d vs %d · %s%s" % [
+			skill_name, int(r["roll"]), int(r["skillValue"]), bonus_term, int(r["total"]),
 			int(check.get("difficulty", 0)),
 			"PASSED" if r["passed"] else "FAILED",
 			("  (critical %s)" % r["critical"]) if r.has("critical") else "",
@@ -482,12 +486,22 @@ func _check_hint(choice: Dictionary) -> String:
 	var skills: Dictionary = _project.get("skills", {})
 	var skill_name := str(skills.get(skill_id, {}).get("name", skill_id))
 
-	return "        [%s %d vs %d — %d%%]" % [
+	return "        [%s %d%s vs %d — %d%%]" % [
 		skill_name,
 		int(_state.skills.get(skill_id, 0)),
+		_signed_term(int(Runtime.check_bonus(check, _state, _project)["bonus"])),
 		int(check.get("difficulty", 0)),
 		round(_check_chance(check)),
 	]
+
+
+## " + 2" / " - 1" for a nonzero check-modifier bonus, "" for none.
+func _signed_term(bonus: int) -> String:
+	if bonus > 0:
+		return " + %d" % bonus
+	if bonus < 0:
+		return " - %d" % -bonus
+	return ""
 
 
 ## The odds a check passes right now, as a percentage.
@@ -524,7 +538,10 @@ func _check_chance(check: Dictionary) -> float:
 		ways = next
 
 	var total := pow(float(m), float(n))
-	var skill := float(_state.skills.get(check.get("skill", ""), 0))
+	# Conditional modifiers shift the whole distribution, exactly as they
+	# shift the roll: check_bonus is the same sum resolve_check adds.
+	var skill := float(_state.skills.get(check.get("skill", ""), 0)) \
+		+ float(Runtime.check_bonus(check, _state, _project)["bonus"])
 	var difficulty := float(check.get("difficulty", 0))
 
 	var passing := 0.0

@@ -2,19 +2,6 @@
   "archetype": "apothecary",
   "description": "Thin, courteous, and very tired. Keeps his hands where you can see them, which is itself a habit worth noticing.",
   "dialogueStyle": "Over-explains. Offers detail nobody asked for, then hears himself doing it and stops.",
-  "dialogues": [
-    {
-      "dialogue": "dlg_wren_cornered",
-      "showIf": {
-        "flag": "knows_wren_dismissed",
-        "type": "flag",
-        "value": true
-      }
-    },
-    {
-      "dialogue": "dlg_wren_first"
-    }
-  ],
   "factionId": "fac_road",
   "id": "npc_wren",
   "loreRef": {
