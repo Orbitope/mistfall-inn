@@ -11,6 +11,7 @@ correct while diverging from the format the addon claims to implement.
 
 Upstream also holds `conformance/` and `schema/`, and runs the vectors in CI.
 
-Current copy: the runtime pinned to Parlance v0.14.0 (dialogue offers, check
-modifiers, node-level `showIf`). Only `runtime.gd` changed in that re-copy; the
-other files were already identical upstream.
+Current copy: the runtime pinned to Parlance v0.14.0, complete against every
+conformance family (dialogue offers, check modifiers, node-level `showIf`,
+quest resolution, progression, next-continuations). All five files are
+byte-identical to parlance-gdscript at the time of copying.
