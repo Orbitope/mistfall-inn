@@ -3,10 +3,9 @@ extends RefCounted
 
 ## The Parlance runtime, ported to GDScript.
 ##
-## Ported families: evaluate, applyEffect, resolveCheck, stepDialogue,
-## chooseChoice, advanceNode, resolveCharacterDialogue. NOT ported:
-## resolveQuests, progression, nextContinuations. The conformance runner
-## reports those as SKIP rather than passing them by omission.
+## Ports every conformance family: evaluate, applyEffect, resolveCheck,
+## stepDialogue, chooseChoice, advanceNode, resolveCharacterDialogue,
+## nextContinuations, resolveQuests and progression.
 ##
 ## `project` is a plain Dictionary in the vectors' MinimalProject shape
 ## (`{"factions": {...}, "quests": {...}}`). Missing sub-objects are legal and
@@ -616,6 +615,246 @@ static func _visited_has(visited, id) -> bool:
 	if visited is Array:
 		return visited.has(id)
 	return false
+
+
+# ------------------------------------------------------ nextContinuations --
+
+
+## The flag a `set_active_dialogue` effect for `character_id` sets.
+static func active_dialogue_flag(character_id: String) -> String:
+	return "active_dialogue__" + character_id
+
+
+## Clears a character's `active_dialogue__` flag (sets it false) so its forced
+## offer stops winning. Call once a forced dialogue has been consumed.
+static func clear_active_dialogue(character_id: String, state: State) -> State:
+	var next: State = state.copy()
+	next.flags[active_dialogue_flag(character_id)] = false
+	return next
+
+
+## Clears the queued cutscene once the host has played it.
+static func clear_pending_cutscene(state: State) -> State:
+	var next: State = state.copy()
+	next.pending_cutscene = null
+	return next
+
+
+## What to offer the player when the current scene ends (the feed model).
+##
+## Returns an Array of
+##   {"kind": "cutscene", "cutscene": {...}}
+##   {"kind": "dialogue", "characterId": id, "dialogue": {...}, "queued": bool}
+##
+## A pending cutscene always comes first. Then FORCED routing: every character
+## whose `active_dialogue__` flag is set and whose winning offer actually READS
+## that flag (a top-level `flag = true` conjunct) is queued, ignoring the
+## visited set. If any character is forced, only those are returned. Otherwise
+## DISCOVERY: each character's best eligible offer, with the visited filter.
+## The current dialogue is always excluded; results are de-duplicated by id.
+##
+## A routed character whose best offer is an ORDINARY one is not forced: it is
+## not queued, does not bypass the visited set, and its flag stays set until
+## the forced offer can win.
+static func next_continuations(state: State, project: Dictionary, visited, current_dialogue_id: String) -> Array:
+	var seen := {current_dialogue_id: true}
+	var dialogues: Dictionary = project.get("dialogues", {}) if project.get("dialogues", null) is Dictionary else {}
+	var characters: Dictionary = project.get("characters", {}) if project.get("characters", null) is Dictionary else {}
+
+	var pending: Array = []
+	if state.pending_cutscene != null:
+		var cutscenes = project.get("cutscenes", {})
+		if cutscenes is Dictionary and cutscenes.get(state.pending_cutscene, null) is Dictionary:
+			pending.append({"kind": "cutscene", "cutscene": cutscenes[state.pending_cutscene]})
+
+	var forced: Array = []
+	for character in characters.values():
+		if not character is Dictionary:
+			continue
+		var flag := active_dialogue_flag(str(character.get("id", "")))
+		if state.flags.get(flag, false) != true:
+			continue
+		var resolved = resolve_character_dialogue(state, character, project)
+		if resolved == null or not dialogues.get(resolved, null) is Dictionary:
+			continue
+		var dialogue: Dictionary = dialogues[resolved]
+		if not _condition_reads_flag(dialogue.get("offer", {}).get("when", null), flag):
+			continue
+		if not seen.has(resolved):
+			seen[resolved] = true
+			forced.append({"kind": "dialogue", "characterId": character.get("id"), "dialogue": dialogue, "queued": true})
+	if not forced.is_empty():
+		return pending + forced
+
+	var discovered: Array = []
+	for character in characters.values():
+		if not character is Dictionary:
+			continue
+		var resolved = resolve_character_dialogue(state, character, project, visited if visited != null else [])
+		if resolved == null or not dialogues.get(resolved, null) is Dictionary:
+			continue
+		if not seen.has(resolved):
+			seen[resolved] = true
+			discovered.append({"kind": "dialogue", "characterId": character.get("id"), "dialogue": dialogues[resolved], "queued": false})
+	return pending + discovered
+
+
+## Does this gate REQUIRE `flag` to be true — a top-level conjunct
+## `flag = true`, with `all` flattened? The test for a forced offer.
+static func _condition_reads_flag(condition, flag: String) -> bool:
+	if not condition is Dictionary:
+		return false
+	if condition.get("type", "") == "all":
+		for c in condition.get("of", []):
+			if _condition_reads_flag(c, flag):
+				return true
+		return false
+	return condition.get("type", "") == "flag" and condition.get("flag", null) == flag and condition.get("value", null) == true
+
+
+# ---------------------------------------------------------- resolveQuests --
+
+
+## The questFired record key for a stage or outcome.
+static func quest_fired_key(quest_id: String, kind: String, id: String) -> String:
+	return "%s/%s/%s" % [quest_id, kind, id]
+
+
+## Fires quest stage `onComplete` and outcome `effects` whose condition
+## (`completeWhen` / `reachedWhen`) holds, once each per playthrough.
+##
+## Returns {"state": State, "firings": [{quest, kind, id, effects}]}. With no
+## firings the input state is returned as is.
+##
+##   - An item fires only if it HAS effects AND a condition, the condition is
+##     true, and its key is not already in quest_fired. Effects with no
+##     condition never auto-fire.
+##   - Runs to a fixpoint: one firing's effects may satisfy another's
+##     condition. Terminates because each item fires at most once.
+##   - Deterministic order: quests by id, then stages, then outcomes, each in
+##     array order.
+##   - Never writes quest_stages; advancing a stage stays the author's effect.
+static func resolve_quests(state: State, project: Dictionary) -> Dictionary:
+	var quests: Dictionary = project.get("quests", {}) if project.get("quests", null) is Dictionary else {}
+	var quest_ids := quests.keys()
+	quest_ids.sort()
+
+	var current := state
+	var firings: Array = []
+	var changed := true
+	while changed:
+		changed = false
+		for qid in quest_ids:
+			var quest = quests[qid]
+			if not quest is Dictionary:
+				continue
+			for stage in quest.get("stages", []):
+				if stage is Dictionary:
+					var r := _try_fire(current, project, str(qid), "stage", stage, "completeWhen", "onComplete", firings)
+					if r != null:
+						current = r
+						changed = true
+			for outcome in quest.get("outcomes", []):
+				if outcome is Dictionary:
+					var r := _try_fire(current, project, str(qid), "outcome", outcome, "reachedWhen", "effects", firings)
+					if r != null:
+						current = r
+						changed = true
+
+	return {"state": current, "firings": firings}
+
+
+## One item's firing attempt: the new state if it fired, else null.
+static func _try_fire(state: State, project: Dictionary, quest_id: String, kind: String, item: Dictionary, when_key: String, effects_key: String, firings: Array) -> State:
+	var effects = item.get(effects_key, null)
+	if not (effects is Array and not effects.is_empty()):
+		return null
+	if not item.has(when_key):
+		return null
+	var key := quest_fired_key(quest_id, kind, str(item.get("id", "")))
+	if state.quest_fired.has(key):
+		return null
+	if not evaluate(item[when_key], state, project):
+		return null
+	# `effects` is non-empty, so apply_effects has already copied.
+	var next := apply_effects(effects, state, project)
+	next.quest_fired[key] = true
+	firings.append({"quest": quest_id, "kind": kind, "id": item.get("id", ""), "effects": effects})
+	return next
+
+
+# ------------------------------------------------------------ progression --
+#
+# `xp` is total-earned and monotonic; levels and points are DERIVED from it,
+# never stored, so they cannot desync. `config` is progression.json. `skills`
+# is the optional skills registry (id -> skill), for per-skill `max` caps.
+
+
+## Highest threshold index whose value is <= xp.
+static func level_for_xp(xp: float, config: Dictionary) -> int:
+	var level := 0
+	var thresholds: Array = config.get("xpThresholds", [])
+	for i in thresholds.size():
+		if xp >= float(thresholds[i]):
+			level = i
+		else:
+			break
+	return level
+
+
+## Total skill points ever granted at this xp: level x pointsPerLevel.
+static func points_earned(xp: float, config: Dictionary) -> float:
+	return float(level_for_xp(xp, config)) * float(config.get("pointsPerLevel", 0))
+
+
+## A skill's ceiling: its own `max` if the registry sets one, else maxSkill.
+static func skill_cap(skill_id: String, config: Dictionary, skills := {}) -> float:
+	var skill = skills.get(skill_id, null)
+	if skill is Dictionary and skill.has("max"):
+		return float(skill["max"])
+	return float(config.get("maxSkill", 0))
+
+
+## Preset loadout + points invested, clamped to the skill's ceiling.
+static func effective_skill(skill_id: String, state: State, config: Dictionary, skills := {}) -> float:
+	var preset := float(config.get("startingSkills", {}).get(skill_id, 0))
+	var invested := float(state.skill_points_spent.get(skill_id, 0))
+	return minf(preset + invested, skill_cap(skill_id, config, skills))
+
+
+## Unspent points: earned minus everything invested. Derived, never stored.
+static func available_points(state: State, config: Dictionary) -> float:
+	var spent := 0.0
+	for v in state.skill_points_spent.values():
+		spent += float(v)
+	return points_earned(state.xp, config) - spent
+
+
+## skills = effective_skill for every preset or invested skill. Skills outside
+## progression are left alone. Call on load and after any invest.
+static func recompute_skills(state: State, config: Dictionary, skills := {}) -> State:
+	var next: State = state.copy()
+	var ids := {}
+	for id in config.get("startingSkills", {}).keys():
+		ids[id] = true
+	for id in state.skill_points_spent.keys():
+		ids[id] = true
+	for id in ids.keys():
+		next.skills[id] = effective_skill(str(id), state, config, skills)
+	return next
+
+
+## Spends one point on `skill_id`. A player action (level-up UI), not an
+## effect. A no-op unless a point is available AND the skill is below its
+## ceiling, so a point is never wasted on a capped skill.
+static func invest_skill_point(state: State, skill_id: String, config: Dictionary, skills := {}) -> State:
+	if available_points(state, config) <= 0:
+		return state
+	if effective_skill(skill_id, state, config, skills) >= skill_cap(skill_id, config, skills):
+		return state
+	var next: State = state.copy()
+	next.skill_points_spent[skill_id] = float(next.skill_points_spent.get(skill_id, 0)) + 1.0
+	return recompute_skills(next, config, skills)
 
 
 # ------------------------------------------------------ speaker / portrait --
