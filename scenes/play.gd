@@ -287,17 +287,24 @@ func _start_dialogue(dialogue_id: String) -> void:
 ## The runtime returns onEnter effects without applying them — deciding when
 ## they fire is the caller's job, and this is that caller. Firing on arrival
 ## and not on re-render is what stops a rewind double-counting evidence.
+##
+## Resolve once, and only once (RUNTIME_CONTRACT, "arrival sequence"): both
+## gates — the skip walk and the line gate — are judged against the ARRIVAL
+## state, then onEnter fires, then the node is presented against the
+## post-onEnter state without resolving again. Re-stepping after onEnter would
+## re-judge the gates and could hide a line whose own onEnter clears its gate.
 func _enter_node(node_id: String) -> void:
-	_node_id = node_id
-
-	var step: Dictionary = Runtime.step_dialogue(_dialogue, node_id, _state, _project)
-	if step.has("error"):
-		_text.text = "[color=red]%s[/color]" % step["error"]
+	var node: Dictionary = Runtime.resolve_node(_dialogue, node_id, _state, _project)
+	if node.has("error"):
+		_text.text = "[color=red]%s[/color]" % node["error"]
 		return
+	# The node actually reached, which the skip walk may have moved past node_id.
+	_node_id = str(node.get("id", node_id))
+	var text_hidden: bool = Runtime.node_text_hidden(node, _state, _project)
 
-	_state = Runtime.apply_effects(step["onEnterEffects"], _state, _project)
-	# Re-step so any interpolated text sees the post-onEnter state.
-	step = Runtime.step_dialogue(_dialogue, node_id, _state, _project)
+	_state = Runtime.apply_effects(node.get("onEnter", []), _state, _project)
+	# Present against the post-onEnter state so interpolated text sees it.
+	var step: Dictionary = Runtime.step_resolved_node(node, _state, _project, text_hidden)
 
 	_render_node(step)
 
@@ -416,7 +423,7 @@ func _current_choice(choice_id: String) -> Dictionary:
 ## is what makes arriving by `next` and arriving by `goto` produce identical
 ## state — the property the conformance suite's parity vectors exist to pin.
 func _on_advance() -> void:
-	var outcome: Dictionary = Runtime.advance_node(_dialogue, _node_id, _state)
+	var outcome: Dictionary = Runtime.advance_node(_dialogue, _node_id, _state, _project)
 	if outcome.has("error"):
 		_text.text = "[color=red]%s[/color]" % outcome["error"]
 		return
