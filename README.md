@@ -84,9 +84,12 @@ same `check_bonus` the roll uses.
 ## Provenance
 
 `data/` and `lore/` are a copy of the Mistfall Inn demo that ships with
-Parlance, last re-synced from Parlance v0.14.0 and byte-identical to it but for
-one deliberate divergence: the militia threshold was raised from 3 to 5, in its
-own commit so it is visible in `git log data/`.
+Parlance, last re-synced from Parlance v0.15.0. Every file this game ships is
+byte-identical to upstream but for one deliberate divergence: the militia
+threshold was raised from 3 to 5, in its own commit so it is visible in
+`git log data/`. The upstream demo also carries custom-type data (`types.json`,
+`drinks.json`, `suppliers/`) and engine bindings (`bindings/godot.json`) that
+this game does not use and does not ship.
 
 ## Licensing
 

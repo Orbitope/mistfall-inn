@@ -14,6 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: Orbitope/parlance-releases/validate@v0.14.0
+      - uses: Orbitope/parlance-releases/validate@v0.15.0
         with:
           strict: "true"

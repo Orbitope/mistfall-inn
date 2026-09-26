@@ -4,7 +4,8 @@ extends RefCounted
 ## The Parlance runtime, ported to GDScript.
 ##
 ## Ports every conformance family: evaluate, applyEffect, resolveCheck,
-## stepDialogue, chooseChoice, advanceNode, resolveCharacterDialogue,
+## stepDialogue (with resolveNode and stepResolvedNode), chooseChoice,
+## advanceNode, resolveCharacterDialogue,
 ## nextContinuations, resolveQuests and progression.
 ##
 ## `project` is a plain Dictionary in the vectors' MinimalProject shape
@@ -12,11 +13,14 @@ extends RefCounted
 ## mean "no data": an unknown faction applies its delta unclamped, an unknown
 ## quest is false for every op. Nothing here throws on missing project data.
 ##
-## ERRORS. GDScript has no exceptions, so the one family with a throw contract
-## (`advance_node`) returns `{"error": "..."}` instead. Callers must check for
-## that key — see the function's own note. `resolve_check` (and so
-## `choose_choice`) does the same for a check that declares modifiers but is
-## given no project. Every other entry point is total.
+## ERRORS. GDScript has no exceptions, so where the reference throws this port
+## returns `{"error": "..."}` instead, and callers must check for that key:
+## `resolve_node` / `step_dialogue` / `advance_node` on COND-invalid data (a
+## missing node, a ring of failing gates, a skipped node with no `next`),
+## `advance_node` on a node with no `next`, `choose_choice` on a choice that is
+## not selectable (hidden, locked, or an unoffered fallback — contract 0.15.0),
+## and `resolve_check` (and so `choose_choice`) on a check that declares
+## modifiers but is given no project. Every other entry point is total.
 
 const Rng := preload("res://addons/parlance/rng.gd")
 const State := preload("res://addons/parlance/state.gd")
@@ -258,6 +262,12 @@ static func apply_effect(effect, state: State, project := {}) -> State:
 		"set_text":
 			next.texts[effect.get("variable", "")] = effect.get("value", "")
 
+		"engine":
+			# Contract 0.15.0: an engine command changes NO state. It is
+			# returned in order inside onEnterEffects / a choice's effects and
+			# the host dispatches on `command`; the runtime never interprets it.
+			pass
+
 	return next
 
 
@@ -379,69 +389,191 @@ static func parse_dice(notation: String) -> Dictionary:
 	return {"n": 1, "m": 20}
 
 
+# ------------------------------------------------------------- resolveNode --
+
+
+## Whether a node may be SKIPPED by a failed `showIf` (contract 0.15.0): an
+## interstitial beat, with no choices and not `isEnd`. A gated node with
+## choices or `isEnd` is never skipped — skipping it would strand the player —
+## and a failed gate there hides only its line (`textHidden`).
+static func is_skippable_node(node: Dictionary) -> bool:
+	var choices = node.get("choices", null)
+	var has_choices: bool = choices is Array and not choices.is_empty()
+	return not has_choices and not bool(node.get("isEnd", false))
+
+
+## Walks past INTERSTITIAL nodes whose `showIf` fails, following `next`, and
+## returns the first node actually reached.
+##
+## THE one place the skip walk lives. Every arrival — `entry`, a `next`
+## advance, a choice `goto`, a check's onSuccess/onFailure — goes through
+## here, so a conditional node behaves identically however it is reached. A
+## skipped node is inert: no text, no onEnter, no transcript entry.
+##
+## Returns the node Dictionary, or `{"error": ...}` (the reference throws) for
+## a missing node, a ring of failing gates, or a skipped node with no `next` —
+## all COND-invalid data, reported rather than guessed around. Tell the two
+## apart with `result.has("error")`: a real node never carries that key.
+static func resolve_node(dialogue: Dictionary, node_id: String, state: State, project := {}) -> Dictionary:
+	var seen := {}
+	var current_id := node_id
+	while true:
+		var node: Variant = find_node(dialogue, current_id)
+		if node == null:
+			return {"error": "node '%s' does not exist in dialogue '%s'" % [current_id, dialogue.get("id", "?")]}
+		if not node.has("showIf") or not is_skippable_node(node) or evaluate(node["showIf"], state, project):
+			return node
+		if seen.has(current_id):
+			return {"error": "Cycle among conditional nodes in dialogue '%s' at '%s': resolution cannot escape" % [dialogue.get("id", "?"), current_id]}
+		seen[current_id] = true
+		if not node.has("next"):
+			return {"error": "conditional node '%s' has showIf but no 'next' to skip to" % current_id}
+		current_id = str(node["next"])
+	return {}  # unreachable; satisfies the parser
+
+
 # ----------------------------------------------------------- stepDialogue --
 
 
-## Prepares a node for display: filters choices by `showIf` and interpolates
-## player-facing text.
+## Whether a node's LINE is withheld at this state (contract 0.15.0): a failed
+## `showIf` on a node that is not skippable. Judge it against the ARRIVAL
+## state — before the node's own onEnter — exactly like the skip gate.
+static func node_text_hidden(node: Dictionary, state: State, project := {}) -> bool:
+	return node.has("showIf") and not is_skippable_node(node) and not evaluate(node["showIf"], state, project)
+
+
+## How a choice whose `showIf` fails is presented: the choice's `whenLocked`,
+## else the project's `rules.choices.whenLockedDefault`, else "hide".
+static func resolve_when_locked(choice: Dictionary, project := {}) -> String:
+	if choice.has("whenLocked"):
+		return str(choice["whenLocked"])
+	var rules = project.get("rules", null)
+	if rules is Dictionary and rules.get("choices", null) is Dictionary and rules["choices"].has("whenLockedDefault"):
+		return str(rules["choices"]["whenLockedDefault"])
+	return "hide"
+
+
+## Partitions a node's choices into the selectable set and the
+## locked-but-shown set (contract 0.15.0). THE one place the fallback and
+## whenLocked rules live; step_dialogue and choose_choice both read it, so a
+## choice can never be selectable in one and not the other.
 ##
-## Returns `{"node", "visibleChoices", "onEnterEffects", "error"}`.
+##   visibleChoices — passing non-fallback choices; or, ONLY when that set is
+##                    empty, passing fallback choices (a fallback's own showIf
+##                    still applies). Authored order.
+##   lockedChoices  — failing choices whose whenLocked resolves to "show".
+##
+## Returns the AUTHORED choice Dictionaries (not interpolated copies).
+static func partition_choices(node: Dictionary, state: State, project := {}) -> Dictionary:
+	var all: Array = []
+	for c in node.get("choices", []):
+		if c is Dictionary:
+			all.append(c)
+	var passes: Array = []
+	var any_primary := false
+	for c in all:
+		var p: bool = not c.has("showIf") or evaluate(c["showIf"], state, project)
+		passes.append(p)
+		if p and not bool(c.get("fallback", false)):
+			any_primary = true
+	var visible: Array = []
+	var locked: Array = []
+	for i in all.size():
+		var c: Dictionary = all[i]
+		if passes[i]:
+			if bool(c.get("fallback", false)) != any_primary:
+				visible.append(c)
+		elif resolve_when_locked(c, project) == "show":
+			locked.append(c)
+	return {"visibleChoices": visible, "lockedChoices": locked}
+
+
+## Prepares a node for display: resolves it (skip walk), partitions its
+## choices, applies the line gate and interpolates player-facing text.
+##
+## Returns `{"node", "visibleChoices", "lockedChoices", "textHidden",
+## "onEnterEffects"}`, or `{"error"}` when resolution fails (see resolve_node).
+## The returned node may NOT be the one requested — read its id.
 ##
 ## CALLER RESPONSIBILITY: `onEnterEffects` are RETURNED, NOT APPLIED. The
 ## caller decides when they fire (on first arrival; not on replay). Applying
-## them here would double-fire every effect on a rewind.
+## them here would double-fire every effect on a rewind. A caller that applies
+## them before presenting should use resolve_node + step_resolved_node instead.
 static func step_dialogue(dialogue: Dictionary, node_id: String, state: State, project := {}) -> Dictionary:
-	var node: Variant = find_node(dialogue, node_id)
-	if node == null:
-		return {"error": "node '%s' does not exist in dialogue '%s'" % [node_id, dialogue.get("id", "?")]}
+	var node := resolve_node(dialogue, node_id, state, project)
+	if node.has("error"):
+		return node
+	return step_resolved_node(node, state, project)
 
-	# Node-level showIf skip walk (contract 0.11.0): stepping onto a gated node
-	# whose gate fails resolves to the node the player actually sees — the same
-	# skip advance_node performs. A ring of failing gates is COND-invalid and is
-	# reported rather than looped.
-	var seen := {}
-	while node.has("showIf") and not evaluate(node["showIf"], state, project):
-		var here := str(node.get("id", node_id))
-		if seen.has(here):
-			return {"error": "Cycle among conditional nodes: resolution cannot escape"}
-		seen[here] = true
-		if not node.has("next"):
-			return {"error": "conditional node '%s' has no 'next' to skip to" % here}
-		var next_id := str(node["next"])
-		var next_node: Variant = find_node(dialogue, next_id)
-		if next_node == null:
-			return {"error": "next target '%s' does not exist in dialogue '%s'" % [next_id, dialogue.get("id", "?")]}
-		node = next_node
+
+## The presentation half of an arrival, for a node ALREADY resolved.
+##
+## The arrival sequence (RUNTIME_CONTRACT "resolve once, and only once"):
+##   1. `var node := resolve_node(...)` and
+##      `var hidden := node_text_hidden(node, arrival_state, project)` —
+##      both gates, judged once, against the ARRIVAL state;
+##   2. apply `node.onEnter` (and any quest resolution it triggers);
+##   3. `step_resolved_node(node, post_state, project, hidden)` — choices are
+##      filtered and text interpolated against the post-onEnter state;
+##   4. never resolve again while the player stands on the node.
+##
+## `text_hidden` is the arrival-state line gate. Pass it whenever `state` is
+## not the arrival state: a node whose own onEnter fails its own showIf still
+## shows its line. Omitted (null), it is judged against `state` — correct only
+## when no effects were applied between resolving and presenting, which is
+## what step_dialogue does.
+static func step_resolved_node(node: Dictionary, state: State, project := {}, text_hidden = null) -> Dictionary:
+	var hidden: bool = node_text_hidden(node, state, project) if text_hidden == null else bool(text_hidden)
+	var parts := partition_choices(node, state, project)
 
 	var visible: Array = []
-	for choice in node.get("choices", []):
-		if not choice is Dictionary:
-			continue
-		if choice.has("showIf") and not evaluate(choice["showIf"], state, project):
-			continue
-		# Copy only when a placeholder was actually substituted, so callers
-		# comparing node identity to detect edits keep working.
-		var text := str(choice.get("text", ""))
-		var rendered := Interp.interpolate(text, state)
-		if rendered == text:
-			visible.append(choice)
-		else:
-			var c: Dictionary = choice.duplicate(true)
-			c["text"] = rendered
-			visible.append(c)
+	for c in parts["visibleChoices"]:
+		visible.append(_interpolate_choice(c, state))
+	var locked: Array = []
+	for c in parts["lockedChoices"]:
+		locked.append(_interpolate_choice(c, state))
 
+	# Copy only when a string actually changes, so callers comparing node
+	# identity to detect edits keep working. A text-less node (0.15) keeps its
+	# `text` ABSENT — not "" — and is never textHidden unless gated.
 	var out_node := node
-	var node_text := str(node.get("text", ""))
-	var rendered_text := Interp.interpolate(node_text, state)
-	if rendered_text != node_text:
+	if hidden:
 		out_node = node.duplicate(true)
-		out_node["text"] = rendered_text
+		out_node["text"] = ""
+	elif node.has("text"):
+		var node_text := str(node["text"])
+		var rendered_text := Interp.interpolate(node_text, state)
+		if rendered_text != node_text:
+			out_node = node.duplicate(true)
+			out_node["text"] = rendered_text
 
 	return {
 		"node": out_node,
 		"visibleChoices": visible,
+		"lockedChoices": locked,
+		"textHidden": hidden,
 		"onEnterEffects": node.get("onEnter", []),
 	}
+
+
+## A choice with `text` (and `lockedText`) interpolated; the same Dictionary
+## when nothing was substituted. Tags and every other key pass through.
+static func _interpolate_choice(choice: Dictionary, state: State) -> Dictionary:
+	var text := str(choice.get("text", ""))
+	var rendered := Interp.interpolate(text, state)
+	var locked_changed := false
+	var locked_rendered := ""
+	if choice.has("lockedText"):
+		var lt := str(choice["lockedText"])
+		locked_rendered = Interp.interpolate(lt, state)
+		locked_changed = locked_rendered != lt
+	if rendered == text and not locked_changed:
+		return choice
+	var c: Dictionary = choice.duplicate(true)
+	c["text"] = rendered
+	if locked_changed:
+		c["lockedText"] = locked_rendered
+	return c
 
 
 # ----------------------------------------------------------- chooseChoice --
@@ -450,10 +582,15 @@ static func step_dialogue(dialogue: Dictionary, node_id: String, state: State, p
 ## Applies a choice's effects, resolves its check if active, and reports where
 ## to go next.
 ##
-## Returns `{"nextNodeId", "newState", "checkResult"?, "error"?}`.
+## Returns `{"nextNodeId", "newState", "checkResult"?}` or `{"error"}`.
 ## `nextNodeId` is null for a terminal choice (no goto, no check).
 ## `checkResult` is present ONLY for an active check — a passive check is a
 ## plain goto and never rolls.
+##
+## NOT SELECTABLE IS AN ERROR (contract 0.15.0): a choice whose showIf fails
+## (hidden or locked), or a fallback while a non-fallback choice is visible,
+## returns `{"error": "... not selectable ..."}` — the reference throws. Same
+## partition as step_dialogue, so pass the state you presented from.
 static func choose_choice(dialogue: Dictionary, node_id: String, choice_id: String, state: State, project := {}, rng := Callable()) -> Dictionary:
 	var node: Variant = find_node(dialogue, node_id)
 	if node == null:
@@ -466,6 +603,14 @@ static func choose_choice(dialogue: Dictionary, node_id: String, choice_id: Stri
 			break
 	if choice == null:
 		return {"error": "choice '%s' does not exist on node '%s'" % [choice_id, node_id]}
+
+	var selectable := false
+	for c in partition_choices(node, state, project)["visibleChoices"]:
+		if is_same(c, choice):
+			selectable = true
+			break
+	if not selectable:
+		return {"error": "Choice '%s' in node '%s' is not selectable at this state (hidden, locked, or an unoffered fallback)" % [choice_id, node_id]}
 
 	var next_state := apply_effects(choice.get("effects", []), state, project)
 
@@ -495,20 +640,22 @@ static func choose_choice(dialogue: Dictionary, node_id: String, choice_id: Stri
 ## Resolves `node.next` — the choiceless counterpart of choose_choice, for
 ## listen-only beats that advance with no player choice.
 ##
-## THIS IS THE ONE FUNCTION WITH A FAILURE CONTRACT. The reference throws;
-## GDScript has no exceptions, so this returns `{"error": "..."}` and the
-## conformance runner treats that as the throw. Callers MUST check for it.
-## Silence here would hide an upstream bug: the validator's FLOW checks and the
-## client both prevent constructing this call on a node with no `next`.
+## FAILURE CONTRACT. The reference throws; GDScript has no exceptions, so this
+## returns `{"error": "..."}` and the conformance runner treats that as the
+## throw. Callers MUST check for it. Silence here would hide an upstream bug:
+## the validator's FLOW checks and the client both prevent constructing this
+## call on a node with no `next`.
 ##
 ## No effects are applied and no check is resolved — `next` carries neither, so
 ## `newState` is the input state unchanged. Effects live on the TARGET's
 ## `onEnter` and are the caller's job on arrival, exactly as for a goto. That
 ## is what makes an advance-arrival and a goto-arrival identical.
 ##
-## Resolves exactly ONE hop. A runtime that auto-chased `next` would collapse a
+## Resolves exactly ONE hop, then runs the shared resolve_node walk so the id
+## returned is the node the player will actually see (only interstitial gated
+## nodes are skipped). A runtime that auto-chased `next` would collapse a
 ## whole ambient run into one uninterruptible jump.
-static func advance_node(dialogue: Dictionary, node_id: String, state: State) -> Dictionary:
+static func advance_node(dialogue: Dictionary, node_id: String, state: State, project := {}) -> Dictionary:
 	var node: Variant = find_node(dialogue, node_id)
 	if node == null:
 		return {"error": "node '%s' does not exist in dialogue '%s'" % [node_id, dialogue.get("id", "?")]}
@@ -517,28 +664,13 @@ static func advance_node(dialogue: Dictionary, node_id: String, state: State) ->
 		return {"error": "node '%s' has no 'next' to advance from" % node_id}
 
 	var target_id := str(node["next"])
+	if find_node(dialogue, target_id) == null:
+		return {"error": "node '%s' has next '%s', which does not exist in dialogue '%s'" % [node_id, target_id, dialogue.get("id", "?")]}
 
-	# Node-level showIf skip walk (contract 0.11.0): cross gated nodes whose gate
-	# fails, following each one's `next`, until a shown node is reached. A ring of
-	# failing gates is COND-invalid data and is reported, not looped. onEnter does
-	# not fire here — advance is navigation, exactly as the ungated path is.
-	var visited := {}
-	while true:
-		var target_node: Variant = find_node(dialogue, target_id)
-		if target_node == null:
-			return {"error": "next target '%s' does not exist in dialogue '%s'" % [target_id, dialogue.get("id", "?")]}
-		if not target_node.has("showIf"):
-			break
-		if evaluate(target_node["showIf"], state, {}):
-			break
-		if visited.has(target_id):
-			return {"error": "Cycle among conditional nodes: resolution cannot escape"}
-		visited[target_id] = true
-		if not target_node.has("next"):
-			return {"error": "conditional node '%s' has no 'next' to skip to" % target_id}
-		target_id = str(target_node["next"])
-
-	return {"nextNodeId": target_id, "newState": state}
+	var resolved := resolve_node(dialogue, target_id, state, project)
+	if resolved.has("error"):
+		return resolved
+	return {"nextNodeId": resolved.get("id", null), "newState": state}
 
 
 # ----------------------------------------- resolveCharacterDialogue (offers) --
