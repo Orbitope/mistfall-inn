@@ -11,7 +11,7 @@ correct while diverging from the format the addon claims to implement.
 
 Upstream also holds `conformance/` and `schema/`, and runs the vectors in CI.
 
-Current copy: parlance-gdscript 9b46319, the runtime pinned to Parlance
+Current copy: parlance-gdscript 90d2688, the runtime pinned to Parlance
 v0.15.0 (a3c6454), complete against every conformance family (207/207 vectors)
 including the 0.15.0 arrival sequence (`resolve_node` + `step_resolved_node`),
 fallback and locked choices, and engine-command effects. All five files are
